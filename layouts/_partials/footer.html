@@ -11,6 +11,7 @@
   {{- if $footerSwitchesVisible -}}
     <div class="hx:mx-auto hx:flex hx:gap-2 hx:py-2 hx:px-4 hextra-max-footer-width">
       {{- partial "language-switch.html" (dict "context" .) -}}
+      {{- partial "custom/switches.html" . -}}
       {{- with $displayThemeToggle }}{{ partial "theme-toggle.html" }}{{ end -}}
     </div>
     {{- if or hugo.IsMultilingual $displayThemeToggle -}}
