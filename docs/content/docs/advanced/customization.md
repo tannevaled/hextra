@@ -253,6 +253,26 @@ The page hooks are rendered inside the page's `<main>` element. The content hook
 
 Each partial receives the current Hugo page as context, so you can use page parameters, site parameters, and other Hugo template features.
 
+## Custom Search Scope
+
+To restrict search results to part of the site, create `layouts/_partials/custom/search-scope.html` in your site and return a section page: only the pages under it are searched. Return `false` to search the whole site, which is the default.
+It receives the current page as context, so a versioned documentation can search only the version being read:
+
+```html {filename="layouts/_partials/custom/search-scope.html"}
+{{- /* Search only /docs/<version>/ while reading a page under it. */ -}}
+{{- $scope := false -}}
+{{- with site.GetPage "/docs" -}}
+  {{- range .Sections -}}
+    {{- if or (eq $.Path .Path) (strings.HasPrefix $.Path (printf "%s/" .Path)) -}}
+      {{- $scope = . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $scope -}}
+```
+
+The restriction is applied inside the index, so the result limit (`maxPageResults`) counts only pages in scope.
+
 ## Custom Layouts
 
 The layouts of the theme can be overridden by creating a file with the same name in the `layouts` directory of your site.

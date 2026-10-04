@@ -39,7 +39,12 @@
         document: {
           id: 'id',
           store: ['title', 'breadcrumbs'],
-          index: "content"
+          index: "content",
+          // Every path prefix of the page ("/", "/docs/", "/docs/v1/", ...),
+          // so a search can be restricted to a section (custom/search-scope.html).
+          tag: [{
+            field: "scopes"
+          }]
         }
       });
 
@@ -68,9 +73,11 @@
         let crumb = '';
         const crumbParts = [];
         let searchUrl = '/';
+        const scopes = ['/'];
         for (let i = 0; i < urlParts.length; i++) {
           const urlPart = urlParts[i];
           searchUrl += urlPart + '/'
+          scopes.push(searchUrl);
 
           const crumbData = data[searchUrl];
           if (!crumbData) {
@@ -128,6 +135,7 @@
           id: pageId,
           title: data[route].title,
           breadcrumbs: crumbParts.slice(0, -1),
+          scopes,
           content: pageContent
         });
       }
@@ -152,7 +160,10 @@
   function performSearch(query) {
     const maxPageResults = parseInt('{{- site.Params.search.flexsearch.maxPageResults | default 20 -}}', 10);
     const maxSectionResults = parseInt('{{- site.Params.search.flexsearch.maxSectionResults | default 10 -}}', 10);
-    const pageResults = pageIndex.search(query, maxPageResults, { enrich: true, suggest: true })[0]?.result || [];
+    const scope = document.getElementById('hextra-search-dialog')?.dataset.searchScope;
+    const pageOptions = { enrich: true, suggest: true };
+    if (scope) pageOptions.tag = { scopes: scope };
+    const pageResults = pageIndex.search(query, maxPageResults, pageOptions)[0]?.result || [];
 
     const groups = [];
     const pageTitleMatches = {};
