@@ -1,0 +1,18 @@
+/* Icon-only links that leave the site carry a small up-right arrow
+   (utils/external-badge.html) on their top-right corner. */
+.hextra-icon-link {
+  position: relative;
+}
+.hextra-external-badge {
+  position: absolute;
+  top: 0.125rem;
+  right: 0.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  @apply hx:bg-white hx:text-gray-600 hx:dark:bg-dark hx:dark:text-gray-300;
+  pointer-events: none;
+}

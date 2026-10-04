@@ -315,6 +315,17 @@ menu:
         icon: gitlab
 ```
 
+## External Link Badge
+
+Icon-only navbar links that leave the site get a small up-right arrow on their top-right corner. To mark your own icon links the same way (for instance in `custom/switches.html`), give the link the `hextra-icon-link` class and render the badge inside it:
+
+```html
+<a class="hextra-icon-link" href="https://example.org" target="_blank" rel="noreferrer">
+  <img src="/images/example.png" alt="Example" width="20" height="20">
+  {{- partial "utils/external-badge.html" . -}}
+</a>
+```
+
 ## Language Flags
 
 Give each language a `flag` parameter (an image path, relative to `static/`) to show it in the language switch, on the button and on every option, instead of the globe icon:
