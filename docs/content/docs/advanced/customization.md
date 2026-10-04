@@ -291,6 +291,29 @@ It receives the current page as context, so a versioned documentation can search
 ```
 
 The restriction is applied inside the index, so the result limit (`maxPageResults`) counts only pages in scope.
+## Custom Switches
+
+To add items next to the theme toggle (and the language switch), create `layouts/_partials/custom/switches.html` in your site.
+They are rendered at the bottom of the sidebar, or in the footer on pages without a sidebar, just before the theme toggle. The partial receives the current page as context.
+
+```html {filename="layouts/_partials/custom/switches.html"}
+<a href="https://example.org" title="Example" class="hx:p-2" target="_blank" rel="noreferrer">
+  {{- partial "utils/icon.html" (dict "name" "globe-alt" "attributes" "height=16") -}}
+</a>
+```
+
+## Forge Icons
+
+The icon set includes `github`, `gitlab`, `codeberg`, `forgejo` and `git`, so a navbar link to the source repository can show the right forge:
+
+```yaml {filename="hugo.yaml"}
+menu:
+  main:
+    - name: Sources
+      url: https://gitlab.example.org/group/project
+      params:
+        icon: gitlab
+```
 
 ## Custom Layouts
 
