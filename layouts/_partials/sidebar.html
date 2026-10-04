@@ -4,6 +4,8 @@
 {{- $displayPlaceholder := .displayPlaceholder | default false -}}
 
 {{- $navRoot := cond (eq site.Home.Type "docs") site.Home $context.FirstSection -}}
+{{- $customRoot := partial "custom/sidebar-root.html" $context -}}
+{{- with $customRoot }}{{ $navRoot = . }}{{ end -}}
 {{- $pageURL := $context.RelPermalink -}}
 
 {{- if .context.Params.sidebar.hide -}}
@@ -24,7 +26,7 @@
   <div class="hextra-scrollbar hx:overflow-y-auto hx:overflow-x-hidden hx:p-4 hx:grow hx:md:h-[calc(100vh-var(--hextra-navbar-height)-var(--menu-height))]">
     <ul class="hx:flex hx:flex-col hx:gap-1 hx:md:hidden">
       <!-- Nav -->
-      {{ template "sidebar-main" (dict "context" site.Home "pageURL" $pageURL "page" $context "toc" true) -}}
+      {{ template "sidebar-main" (dict "context" (cond (not $customRoot) site.Home $customRoot) "pageURL" $pageURL "page" $context "toc" (not $customRoot)) -}}
       {{ template "sidebar-footer" }}
     </ul>
 

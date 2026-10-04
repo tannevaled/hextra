@@ -253,6 +253,33 @@ The page hooks are rendered inside the page's `<main>` element. The content hook
 
 Each partial receives the current Hugo page as context, so you can use page parameters, site parameters, and other Hugo template features.
 
+## Custom Navbar Items
+
+You can add elements to the navbar, right before the search field, by creating a file `layouts/_partials/custom/navbar-before-search.html` in your site.
+It receives the current page as context, so it can for instance render a version selector that points at the current page in another version.
+It is only rendered when the main menu has a search item.
+
+## Custom Sidebar Root
+
+By default, the sidebar lists the tree of the current page's first section.
+To root it elsewhere, create `layouts/_partials/custom/sidebar-root.html` in your site and return the section page to use, or `false` to keep the default.
+It receives the current page as context.
+
+```html {filename="layouts/_partials/custom/sidebar-root.html"}
+{{- /* Root the sidebar at /docs/<version>, so other versions are not listed. */ -}}
+{{- $root := false -}}
+{{- with site.GetPage "/docs" -}}
+  {{- range .Sections -}}
+    {{- if or (eq $.Path .Path) (strings.HasPrefix $.Path (printf "%s/" .Path)) -}}
+      {{- $root = . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $root -}}
+```
+
+When a custom root is returned, the mobile sidebar shows that tree as well, instead of the main menu entries.
+
 ## Custom Layouts
 
 The layouts of the theme can be overridden by creating a file with the same name in the `layouts` directory of your site.
