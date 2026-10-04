@@ -315,6 +315,18 @@ menu:
         icon: gitlab
 ```
 
+## Language Flags
+
+Give each language a `flag` parameter (an image path, relative to `static/`) to show it in the language switch, on the button and on every option, instead of the globe icon:
+
+```yaml {filename="hugo.yaml"}
+languages:
+  en:
+    label: English
+    params:
+      flag: images/flags/gb.svg
+```
+
 ## Custom Layouts
 
 The layouts of the theme can be overridden by creating a file with the same name in the `layouts` directory of your site.
