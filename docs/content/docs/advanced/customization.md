@@ -280,6 +280,18 @@ It receives the current page as context.
 
 When a custom root is returned, the mobile sidebar shows that tree as well, instead of the main menu entries.
 
+## Custom Search Scope
+
+To restrict search results to part of the site, create `layouts/_partials/custom/search-scope.html` in your site and return a section page: only the pages under it are searched. Return `false` to search the whole site, which is the default.
+It receives the current page as context, so a versioned documentation can search only the version being read:
+
+```html {filename="layouts/_partials/custom/search-scope.html"}
+{{- /* Search only the version being read, rooted like the sidebar. */ -}}
+{{- return partial "custom/sidebar-root.html" . -}}
+```
+
+The restriction is applied inside the index, so the result limit (`maxPageResults`) counts only pages in scope.
+
 ## Custom Layouts
 
 The layouts of the theme can be overridden by creating a file with the same name in the `layouts` directory of your site.
