@@ -1,0 +1,8 @@
+/* Page title (the <h1> rendered from .Title by every layout).
+   Sites can change the size everywhere at once with:
+     :root { --hextra-page-title-font-size: 2.5rem; } */
+.hextra-page-title {
+  @apply hx:mt-2 hx:font-bold hx:tracking-tight hx:text-slate-900 hx:dark:text-slate-100;
+  font-size: var(--hextra-page-title-font-size, var(--hx-text-4xl));
+  line-height: var(--hextra-page-title-line-height, var(--hx-text-4xl--line-height));
+}
