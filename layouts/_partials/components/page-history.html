@@ -11,7 +11,9 @@
 {{- $git := dict -}}
 {{- with .File -}}
   {{- $key := strings.TrimPrefix (printf "%s/" hugo.WorkingDir) .Filename -}}
-  {{- $git = index (site.Data.pagehistory | default dict) $key | default dict -}}
+  {{- /* hugo.Data on Hugo 0.156+, site.Data before (site.Data is deprecated). */ -}}
+  {{- $data := partial "utils/hugo-compat/site-data.html" $page -}}
+  {{- $git = index ($data.pagehistory | default dict) $key | default dict -}}
 {{- end -}}
 
 {{- $created := "" -}}
