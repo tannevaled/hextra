@@ -4,13 +4,21 @@
 {{- $logoHeight := .Site.Params.navbar.logo.height | default "20" -}}
 {{- $logoDarkPath := .Site.Params.navbar.logo.dark | default $logoPath -}}
 
-<a class="hx:flex hx:items-center hx:hover:opacity-75 hx:ltr:mr-auto hx:rtl:ml-auto" href="{{ $logoLink }}">
+{{- /* params.navbar.logo.menu: related sites, opened from a chevron beside the
+       title; the logo itself still leads home. */ -}}
+{{- $logoMenu := .Site.Params.navbar.logo.menu -}}
+{{- if $logoMenu }}<div class="hx:flex hx:shrink-0 hx:items-center hx:ltr:mr-auto hx:rtl:ml-auto">{{ end }}
+<a class="hx:flex hx:items-center hx:hover:opacity-75{{ if not $logoMenu }} hx:ltr:mr-auto hx:rtl:ml-auto{{ end }}" href="{{ $logoLink }}">
   {{- $displayTitle := (.Site.Params.navbar.displayTitle | default true) }}
   {{- if (.Site.Params.navbar.displayLogo | default true) }}
     <img class="hx:mr-2 hx:block hx:dark:hidden" src="{{ $logoPath | relURL }}" alt="{{ cond $displayTitle `Logo` .Site.Title }}" height="{{ $logoHeight }}" width="{{ $logoWidth }}" />
     <img class="hx:mr-2 hx:hidden hx:dark:block" src="{{ $logoDarkPath | relURL }}" alt="{{ cond $displayTitle `Dark Logo` .Site.Title }}" height="{{ $logoHeight }}" width="{{ $logoWidth }}" />
   {{- end }}
   {{- if $displayTitle }}
-    <span class="hx:mr-2 hx:font-extrabold hx:inline hx:select-none">{{- .Site.Title -}}</span>
+    <span class="hx:mr-2 hx:font-extrabold hx:inline hx:select-none hx:whitespace-nowrap{{ if (.Site.Params.navbar.displayLogo | default true) }} hextra-navbar-title-beside-logo{{ end }}">{{- .Site.Title -}}</span>
   {{- end }}
 </a>
+{{- with $logoMenu }}
+  {{- partial "navbar-logo-menu.html" . -}}
+</div>
+{{- end }}

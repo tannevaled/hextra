@@ -8,3 +8,25 @@
     hx:text-gray-500 hx:hover:text-gray-900
     hx:dark:text-gray-400 hx:dark:hover:text-gray-50;
 }
+
+/* On a phone the navbar holds the logo, these combos, the search icon and the
+   menu button in 390px: with their labels the combos pushed the logo off the
+   left edge (measured at x = -108). Below md they keep the icon and chevron
+   only; the menu they open still names every choice. */
+@media (max-width: 47.999rem) {
+  .hextra-navbar-combo {
+    @apply hx:px-2 hx:gap-1;
+  }
+  .hextra-navbar-combo span {
+    display: none;
+  }
+}
+
+/* Below 414px even that is too wide: the title ran under the logo menu's
+   chevron (measured at 360 and 390px). The title goes, the logo stays — the
+   class is only set when a logo is shown, so the navbar never loses its brand. */
+@media (max-width: 25.874rem) {
+  .hextra-navbar-title-beside-logo {
+    display: none;
+  }
+}
