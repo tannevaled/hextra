@@ -304,7 +304,7 @@ They are rendered at the start of the switches row — the bottom of the sidebar
 
 ## Related Sites From the Logo
 
-`params.navbar.logo.menu` lists related sites. A chevron then appears beside the navbar title and opens them as a dropdown, while the logo itself still leads home. Each entry has a `name`, a `url`, and optionally a `logo` and a `logoDark` image; links leaving the site open in a new tab with an up-right arrow. An entry `separator: true` draws a line between two groups.
+`params.navbar.logo.menu` lists related sites. A chevron then appears beside the navbar title and opens them as a dropdown, while the logo itself still leads home. Each entry has a `name`, a `url`, and optionally a `logo` and a `logoDark` image; links leaving the site open in a new tab with an up-right arrow. An entry `separator: true` draws a line between two groups. The chevron points forward while the menu is closed and turns down when it opens.
 
 ```yaml {filename="hugo.yaml"}
 params:
