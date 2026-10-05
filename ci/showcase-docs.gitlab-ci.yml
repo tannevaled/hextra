@@ -1,0 +1,102 @@
+# GitLab CI for the project whose Pages serve a versioned documentation (the
+# "showcase"): deploy every published version of the documentation under
+# public/docs/. The documentation project itself uses ci/docs.gitlab-ci.yml.
+#
+# Include it, pinned to a commit of this theme, and add the hidden job's script
+# to the Pages job, after the site's own build:
+#
+#   include:
+#     - remote: https://raw.githubusercontent.com/tannevaled/hextra/<commit>/ci/showcase-docs.gitlab-ci.yml
+#   variables:
+#     DOCS_PROJECT: "group/docs"        # the documentation project
+#     DOCS_PACKAGE: "example-docs"      # its generic package
+#     DOCS_ARCHIVE: "docs.tar.gz"       # file name inside each package version
+#     DOCS_TITLE: "Documentation X"     # title of the /docs/ redirect page
+#   pages:
+#     script:
+#       - …build the site into public/…
+#       - !reference [.deploy-docs, script]
+#
+# It writes:
+#   public/docs/<version>/   one build per version: each semver release vX.Y.Z,
+#                            plus "development" (the documentation's main branch)
+#   public/docs/versions.json  the list the version selector reads (mike's
+#                            format: version, title, aliases, properties)
+#   public/docs/index.html   a redirect to the latest release
+#
+# The CI job token authenticates, in a header: the documentation project must
+# list this project in its job token allowlist (Settings > CI/CD > Job token
+# permissions). It fails, and so stops the publication, when the registry
+# cannot be read or holds no version: better the previous site than a showcase
+# with a broken /docs/. Needs bash, curl, jq and tar in the job's image.
+
+.deploy-docs:
+  script:
+    - |
+      bash -euo pipefail <<'DEPLOY_DOCS'
+      # No defaults for project and package: a showcase that forgot them would
+      # otherwise publish someone else's documentation without a word.
+      DOCS_PACKAGE="${DOCS_PACKAGE:?set DOCS_PACKAGE}"; DOCS_PROJECT="${DOCS_PROJECT:?set DOCS_PROJECT}"
+      DOCS_ARCHIVE="${DOCS_ARCHIVE:-docs.tar.gz}"
+      DEST="${DOCS_DEST:-public/docs}"
+      DEVELOPMENT="${DOCS_DEVELOPMENT:-development}"
+      : "${CI_API_V4_URL:?}" "${CI_JOB_TOKEN:?}"
+
+      api="${CI_API_V4_URL}/projects/${DOCS_PROJECT//\//%2F}"
+      get() { curl --fail --silent --show-error --header "JOB-TOKEN: ${CI_JOB_TOKEN}" "$@"; }
+
+      # Every version of the package (package_name filters by substring: keep exact names).
+      versions=""
+      page=1
+      while :; do
+        batch=$(get "${api}/packages?package_type=generic&package_name=${DOCS_PACKAGE}&per_page=100&page=${page}" |
+          jq -r --arg name "$DOCS_PACKAGE" '.[] | select(.name == $name) | .version')
+        [ -n "$batch" ] || break
+        versions+="${batch}"$'\n'
+        [ "$(printf '%s\n' "$batch" | wc -l)" -lt 100 ] && break
+        page=$((page + 1))
+      done
+
+      releases=$(printf '%s' "$versions" | grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' | sort -u -r -V || true)
+      development=$(printf '%s' "$versions" | grep -Fx "$DEVELOPMENT" | head -n 1 || true)
+      if [ -z "$releases" ] && [ -z "$development" ]; then
+        echo "deploy-docs: no published version of ${DOCS_PACKAGE} in ${DOCS_PROJECT}" >&2
+        exit 1
+      fi
+
+      mkdir -p "$DEST"
+      for version in $development $releases; do
+        echo "deploy-docs: ${version}"
+        mkdir -p "${DEST}/${version}"
+        get "${api}/packages/generic/${DOCS_PACKAGE}/${version}/${DOCS_ARCHIVE}" | tar -xz -C "${DEST}/${version}"
+      done
+
+      # versions.json: development first (mike places development versions above
+      # releases), then releases newest first; the newest carries the alias "latest".
+      latest=$(printf '%s\n' "$releases" | head -n 1)
+      {
+        [ -n "$development" ] && jq -n --arg v "$development" \
+          '{version: $v, title: $v, aliases: [], properties: {development: true}}'
+        for version in $releases; do
+          jq -n --arg v "$version" --arg latest "$latest" \
+            '{version: $v, title: $v, aliases: (if $v == $latest then ["latest"] else [] end)}'
+        done
+      } | jq -s . > "${DEST}/versions.json"
+
+      # /docs/ opens the latest release, or the development version if none is released yet.
+      default="${latest:-$development}"
+      cat > "${DEST}/index.html" <<EOF
+      <!doctype html>
+      <html lang="fr">
+      <head>
+      <meta charset="utf-8">
+      <title>${DOCS_TITLE:-Documentation}</title>
+      <meta http-equiv="refresh" content="0; url=${default}/">
+      <link rel="canonical" href="${default}/">
+      </head>
+      <body><p><a href="${default}/">${DOCS_TITLE:-Documentation}, version ${default}</a></p></body>
+      </html>
+      EOF
+
+      echo "deploy-docs: $(printf '%s\n' $development $releases | wc -l | tr -d ' ') version(s), /docs/ -> ${default}/"
+      DEPLOY_DOCS

@@ -1,0 +1,131 @@
+# GitLab CI for a documentation site published one build per version.
+#
+# Include it from the documentation project, pinned to a commit of this theme:
+#
+#   include:
+#     - remote: https://raw.githubusercontent.com/tannevaled/hextra/<commit>/ci/docs.gitlab-ci.yml
+#   variables:
+#     DOCS_URL: "https://example.org/docs"        # where the versions are served
+#     DOCS_PACKAGE: "example-docs"                 # generic package of the builds
+#     DOCS_SHOWCASE: "group/example.org"           # project whose Pages serve DOCS_URL
+#     DOCS_TITLE: "Documentation Example"          # release name prefix
+#
+# Every version is a separate build under DOCS_URL/<version>/:
+#   - a strict semantic-versioning tag vX.Y.Z → DOCS_URL/vX.Y.Z/  (a release)
+#   - the default branch                     → DOCS_URL/development/
+# Each build is packaged into the generic package registry (version = tag or
+# "development"), a GitLab release is created for tags, and the showcase
+# pipeline is triggered: with ci/showcase-docs.gitlab-ci.yml it downloads every
+# published version into public/docs/ and writes versions.json, which
+# components/version-select.html reads.
+#
+# The theme is expected as the submodule themes/hextra; creation dates come
+# from scripts/page-history.sh (params.page.history), hence the full history.
+
+default:
+  image: debian:bookworm-slim
+
+variables:
+  HUGO_VERSION: "0.162.1"
+  HUGO_ENV: production
+  GIT_SUBMODULE_STRATEGY: recursive
+  # The whole history: page dates come from git, and a shallow clone leaves
+  # pages untouched by the last commits without one.
+  GIT_DEPTH: "0"
+  DOCS_ARCHIVE: "docs.tar.gz"
+
+stages:
+  - build
+  - publish
+  - deploy
+
+# Only strict semantic-versioning tags (vMAJOR.MINOR.PATCH) are published.
+.docs-release-tag: &docs-release-tag
+  if: $CI_COMMIT_TAG =~ /^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/
+.docs-main: &docs-main
+  if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG == null
+
+build:
+  stage: build
+  script:
+    # git: Hugo reads each page's last-modified date from it (enableGitInfo).
+    - apt-get update && apt-get install -y --no-install-recommends ca-certificates wget git
+    # The checkout belongs to another user than the job's root: without this,
+    # git refuses the repository ("dubious ownership") and Hugo has no dates.
+    - git config --global --add safe.directory "${CI_PROJECT_DIR}"
+    - wget -qO /tmp/hugo.tar.gz "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+    - tar -xzf /tmp/hugo.tar.gz -C /usr/local/bin hugo
+    - hugo version
+    # Creation date and author of every page, from its first commit (Hugo only
+    # reads the last one).
+    - mkdir -p data && sh themes/hextra/scripts/page-history.sh > data/pagehistory.json
+    - VERSION="${CI_COMMIT_TAG:-development}"
+    # The version is the last segment of baseURL: the version selector reads it there.
+    - hugo --gc --minify --panicOnWarning --baseURL "${DOCS_URL}/${VERSION}/"
+    - tar -C public -czf "${DOCS_ARCHIVE}" .
+    - echo "VERSION=${VERSION}" > build.env
+  artifacts:
+    paths:
+      - "${DOCS_ARCHIVE}"
+    reports:
+      dotenv: build.env
+    expire_in: 1 week
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - *docs-main
+    - *docs-release-tag
+
+# Package registry: version vX.Y.Z or "development". Publishing "development"
+# again adds a newer file to that package; a download returns the most recent.
+publish:
+  stage: publish
+  needs: [build]
+  script:
+    - apt-get update && apt-get install -y --no-install-recommends ca-certificates curl
+    - >
+      curl --fail-with-body --silent --show-error
+      --header "JOB-TOKEN: ${CI_JOB_TOKEN}"
+      --upload-file "${DOCS_ARCHIVE}"
+      "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${DOCS_PACKAGE}/${VERSION}/${DOCS_ARCHIVE}"
+  rules:
+    - *docs-main
+    - *docs-release-tag
+
+# A GitLab release for each tag, through the Releases API (no dependency on the
+# release-cli or glab images).
+release:
+  stage: publish
+  needs: [build, publish]
+  script:
+    - apt-get update && apt-get install -y --no-install-recommends ca-certificates curl
+    - |
+      cat > release.json <<EOF
+      {
+        "tag_name": "${CI_COMMIT_TAG}",
+        "name": "${DOCS_TITLE} ${CI_COMMIT_TAG}",
+        "description": "${DOCS_TITLE}, version ${CI_COMMIT_TAG} : ${DOCS_URL}/${CI_COMMIT_TAG}/",
+        "assets": { "links": [
+          { "name": "Documentation en ligne", "url": "${DOCS_URL}/${CI_COMMIT_TAG}/", "link_type": "other" },
+          { "name": "${DOCS_ARCHIVE}", "url": "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${DOCS_PACKAGE}/${CI_COMMIT_TAG}/${DOCS_ARCHIVE}", "link_type": "package" }
+        ] }
+      }
+      EOF
+    - >
+      curl --fail-with-body --silent --show-error
+      --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --header "Content-Type: application/json"
+      --data @release.json
+      "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases"
+  rules:
+    - *docs-release-tag
+
+# Ask the showcase to redeploy: it publishes every version found in the registry.
+deploy:
+  stage: deploy
+  needs: [publish]
+  trigger:
+    project: $DOCS_SHOWCASE
+    branch: main
+    strategy: depend
+  rules:
+    - *docs-main
+    - *docs-release-tag
