@@ -302,6 +302,24 @@ They are rendered at the start of the switches row — the bottom of the sidebar
 </a>
 ```
 
+## Related Sites From the Logo
+
+`params.navbar.logo.menu` lists related sites. A chevron then appears beside the navbar title and opens them as a dropdown, while the logo itself still leads home. Each entry has a `name`, a `url`, and optionally a `logo` and a `logoDark` image; links leaving the site open in a new tab with an up-right arrow.
+
+```yaml {filename="hugo.yaml"}
+params:
+  navbar:
+    logo:
+      path: images/logo.svg
+      menu:
+        - name: Sister project
+          url: https://sister.example.org/
+          logo: images/sister.png
+          logoDark: images/sister-dark.png
+```
+
+On narrow screens the navbar combos show their icon and chevron only, and below 414px the title gives way to the logo, so the brand and its menu never leave the screen.
+
 ## Navbar Items From a Partial
 
 A main menu item of type `partial` renders a partial of your site at its place in the navbar, with the current page as context. Its `weight` orders it among the other items, so it can sit anywhere — for instance a version selector between other controls:

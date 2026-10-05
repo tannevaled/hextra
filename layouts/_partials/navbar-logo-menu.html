@@ -1,0 +1,33 @@
+{{- /* Related sites, opened from a chevron beside the navbar title.
+
+  Each entry of params.navbar.logo.menu: name, url, and optionally logo and
+  logoDark (image paths). Links that leave the site open in a new tab and carry
+  the up-right arrow. Built on the navbar dropdown (nav-menu.js), so keyboard
+  navigation and outside-click closing come with it. */ -}}
+{{- $label := (T "relatedSites") | default "Related sites" -}}
+{{- $item := "hx:text-gray-600 hx:hover:text-gray-800 hx:dark:text-gray-400 hx:dark:hover:text-gray-200 hx:relative hx:cursor-pointer hx:whitespace-nowrap hx:rounded-sm hx:py-1.5 hx:transition-colors hx:ltr:pl-3 hx:ltr:pr-9 hx:rtl:pr-3 hx:rtl:pl-9 hx:flex hx:items-center hx:gap-2 hx:hover:bg-gray-100 hx:dark:hover:bg-neutral-800" -}}
+<div class="hx:relative hx:inline-flex">
+  <button type="button" data-state="closed" aria-expanded="false" aria-haspopup="menu"
+          title="{{ $label }}" aria-label="{{ $label }}"
+          class="hextra-nav-menu-toggle hextra-logo-menu-toggle hx:cursor-pointer hx:rounded-md hx:p-1 hx:text-gray-600 hx:hover:text-gray-900 hx:hover:bg-gray-100 hx:dark:text-gray-400 hx:dark:hover:text-gray-50 hx:dark:hover:bg-primary-100/5">
+    {{- partial "utils/icon.html" (dict "name" "chevron-down" "attributes" "height=14") -}}
+  </button>
+  <ul class="hextra-nav-menu-items hx:hidden hx:z-20 hx:max-h-64 hx:overflow-auto hx:rounded-lg hx:border hx:border-gray-200 hx:bg-white hx:p-1 hx:text-sm hx:shadow-lg hx:dark:border-neutral-700 hx:dark:bg-neutral-900"
+      style="min-width: 12rem;" role="menu" aria-label="{{ $label }}">
+    {{- range . }}
+      {{- $external := strings.HasPrefix .url "http" }}
+    <li role="none" class="hextra-nav-menu-item hx:flex hx:flex-col">
+      <a href="{{ .url }}" role="menuitem" class="{{ $item }}"{{ if $external }} target="_blank" rel="noreferrer"{{ end }}>
+        {{- with .logo }}<img class="hx:block hx:dark:hidden" src="{{ . | relURL }}" alt="" width="20" height="20" loading="lazy">{{ end -}}
+        {{- with (.logoDark | default .logo) }}<img class="hx:hidden hx:dark:block" src="{{ . | relURL }}" alt="" width="20" height="20" loading="lazy">{{ end -}}
+        <span>{{ .name }}</span>
+        {{- if $external }}
+        <span class="hx:absolute hx:inset-y-0 hx:flex hx:items-center hx:ltr:right-3 hx:rtl:left-3" aria-hidden="true">
+          {{- partial "utils/icon.html" (dict "name" "arrow-up-right" "attributes" "height=1em width=1em") -}}
+        </span>
+        {{- end }}
+      </a>
+    </li>
+    {{- end }}
+  </ul>
+</div>
