@@ -48,8 +48,8 @@
   {{ if or hugo.IsMultilingual $displayThemeToggle }}
     <div class="{{ $switchesClass }} {{ with hugo.IsMultilingual }}hx:justify-end{{ end }} hx:sticky hx:bottom-0 hx:max-h-(--menu-height) hx:bg-white hx:dark:bg-dark hx:mx-4 hx:py-4 hx:shadow-[0_-12px_16px_#fff] hx:flex hx:items-center hx:gap-2 hx:border-gray-200 hx:dark:border-neutral-800 hx:dark:shadow-[0_-12px_16px_#111] hx:contrast-more:border-neutral-400 hx:contrast-more:shadow-none hx:contrast-more:dark:shadow-none hx:border-t" data-toggle-animation="show">
       {{- with hugo.IsMultilingual -}}
-        {{- partial "language-switch" (dict "context" $context "grow" true) -}}
         {{- partial "custom/switches.html" $context -}}
+        {{- partial "language-switch" (dict "context" $context "grow" true) -}}
         {{- with $displayThemeToggle }}{{ partial "theme-toggle" (dict "hideLabel" true "location" "bottom-right") }}{{ end -}}
       {{- else -}}
         {{- partial "custom/switches.html" $context -}}
@@ -84,7 +84,7 @@
       {{- $menuType := $menuItem.Params.type | default "" -}}
       {{- $isIconOnly := and $menuItem.Params.icon (ne $menuType "link") -}}
       {{- /* Keep only navigation links in the mobile sidebar. */ -}}
-      {{- if or (eq $menuType "search") (eq $menuType "theme-toggle") (eq $menuType "language-switch") $isIconOnly -}}
+      {{- if or (eq $menuType "search") (eq $menuType "theme-toggle") (eq $menuType "language-switch") (eq $menuType "partial") $isIconOnly -}}
         {{- continue -}}
       {{- end -}}
 
@@ -95,7 +95,7 @@
         {{- range $childItem := $menuItem.Children -}}
           {{- $childType := $childItem.Params.type | default "" -}}
           {{- $childIsIconOnly := and $childItem.Params.icon (ne $childType "link") -}}
-          {{- if or (eq $childType "search") (eq $childType "theme-toggle") (eq $childType "language-switch") $childIsIconOnly -}}
+          {{- if or (eq $childType "search") (eq $childType "theme-toggle") (eq $childType "language-switch") (eq $childType "partial") $childIsIconOnly -}}
             {{- continue -}}
           {{- end -}}
 
