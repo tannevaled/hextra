@@ -2,6 +2,8 @@
 {{- $iconHeight := .iconHeight | default 12 -}}
 {{- $class := .class | default "hx:h-7 hx:px-2 hx:text-xs hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50 hx:font-medium hx:text-gray-600 hx:transition-colors hx:dark:text-gray-400" -}}
 {{- $location := .location | default "bottom" -}}
+{{- /* combo: the navbar's icon + label + chevron form (menu item params.combo). */ -}}
+{{- $combo := .combo | default false -}}
 
 {{- $changeTheme := (T "changeTheme") | default "Change theme" -}}
 {{- $light := (T "light") | default "Light" -}}
@@ -13,7 +15,7 @@
     title="{{ $changeTheme }}"
     data-state="closed"
     data-location="{{ $location }}"
-    class="hextra-theme-toggle hx:cursor-pointer hx:rounded-md hx:text-left hx:font-medium {{ $class }} hx:grow"
+    class="hextra-theme-toggle hx:cursor-pointer {{ if not $combo }}hx:rounded-md hx:text-left hx:font-medium {{ end }}{{ $class }} hx:grow"
     type="button"
     aria-label="{{ $changeTheme }}"
     aria-expanded="false"
@@ -26,6 +28,7 @@
       {{- if not $hideLabel }}<span class="hx:group-data-[theme=light]:hidden hx:group-data-[theme=system]:hidden">{{ $dark }}</span>{{ end -}}
       {{- partial "utils/icon.html" (dict "name" "contrast" "attributes" (printf `height=%d class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=light]:hidden"` $iconHeight)) -}}
       {{- if not $hideLabel }}<span class="hx:group-data-[theme=dark]:hidden hx:group-data-[theme=light]:hidden">{{ $system }}</span>{{ end -}}
+      {{- if $combo }}{{ partial "utils/icon.html" (dict "name" "chevron-down" "attributes" "height=12") }}{{ end -}}
     </div>
   </button>
   <ul

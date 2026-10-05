@@ -294,13 +294,48 @@ The restriction is applied inside the index, so the result limit (`maxPageResult
 ## Custom Switches
 
 To add items next to the theme toggle (and the language switch), create `layouts/_partials/custom/switches.html` in your site.
-They are rendered at the bottom of the sidebar, or in the footer on pages without a sidebar, just before the theme toggle. The partial receives the current page as context.
+They are rendered at the start of the switches row — the bottom of the sidebar, or the footer on pages without a sidebar — before the language switch. The partial receives the current page as context.
 
 ```html {filename="layouts/_partials/custom/switches.html"}
 <a href="https://example.org" title="Example" class="hx:p-2" target="_blank" rel="noreferrer">
   {{- partial "utils/icon.html" (dict "name" "globe-alt" "attributes" "height=16") -}}
 </a>
 ```
+
+## Navbar Items From a Partial
+
+A main menu item of type `partial` renders a partial of your site at its place in the navbar, with the current page as context. Its `weight` orders it among the other items, so it can sit anywhere — for instance a version selector between other controls:
+
+```yaml {filename="hugo.yaml"}
+menu:
+  main:
+    - name: Version
+      weight: 3
+      params:
+        type: partial
+        partial: custom/version-select.html
+```
+
+Such items are left out of the mobile sidebar's menu, like the search and the switches.
+
+## Theme Toggle as a Navbar Combo
+
+The theme toggle can sit in the navbar as a combo — the icon and the name of the current choice, and a chevron — drawn in the same box as the search field:
+
+```yaml {filename="hugo.yaml"}
+menu:
+  main:
+    - name: Theme
+      weight: 4
+      params:
+        type: theme-toggle
+        combo: true
+params:
+  theme:
+    displayToggle: false  # and no longer at the foot of the sidebar
+```
+
+The box is the `hextra-navbar-combo` class, which a site's own navbar dropdown can take to look the same.
 
 ## Forge Icons
 
