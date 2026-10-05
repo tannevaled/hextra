@@ -38,6 +38,7 @@
             </div>
           </div>
         {{- end -}}
+        {{- partial "components/related-pages.html" . -}}
         {{- if site.Params.editURL.enable -}}
           {{- $editURL := site.Params.editURL.base | default "" -}}
           {{- with .Params.editURL -}}

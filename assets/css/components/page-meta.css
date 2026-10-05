@@ -1,0 +1,29 @@
+/* Subtitle and reading time under a docs page title (components/page-meta). */
+.hextra-page-meta {
+  @apply hx:-mt-2 hx:mb-6 hx:flex hx:flex-col hx:gap-1;
+}
+.hextra-page-description {
+  @apply hx:text-lg hx:leading-snug hx:text-gray-600 hx:dark:text-gray-400;
+}
+.hextra-page-reading-time {
+  @apply hx:inline-flex hx:items-center hx:gap-1.5 hx:text-sm hx:text-gray-500 hx:dark:text-gray-400;
+}
+
+/* Section index cards (components/section-cards). */
+.hextra-section-cards {
+  @apply hx:mt-8;
+}
+
+/* Related pages, in the table of contents' bottom part (components/related-pages). */
+.hextra-related-pages {
+  @apply hx:text-xs hx:font-medium;
+}
+.hextra-related-pages-title {
+  @apply hx:mb-1 hx:text-gray-500 hx:dark:text-gray-400 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50;
+}
+.hextra-related-pages ul {
+  @apply hx:flex hx:flex-col hx:gap-1;
+}
+.hextra-related-pages a {
+  @apply hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-100 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50;
+}

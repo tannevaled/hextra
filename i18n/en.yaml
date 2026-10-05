@@ -46,3 +46,5 @@ tags: "Tags"
 viewAsMarkdown: "View as Markdown"
 
 relatedSites: "Related sites"
+readingTime: "{{ . }} min read"
+relatedPages: "Related pages"

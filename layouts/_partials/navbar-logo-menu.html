@@ -1,7 +1,8 @@
 {{- /* Related sites, opened from a chevron beside the navbar title.
 
   Each entry of params.navbar.logo.menu: name, url, and optionally logo and
-  logoDark (image paths). Links that leave the site open in a new tab and carry
+  logoDark (image paths); an entry "separator: true" draws a line between
+  groups. Links that leave the site open in a new tab and carry
   the up-right arrow. Built on the navbar dropdown (nav-menu.js), so keyboard
   navigation and outside-click closing come with it. */ -}}
 {{- $label := (T "relatedSites") | default "Related sites" -}}
@@ -15,6 +16,10 @@
   <ul class="hextra-nav-menu-items hx:hidden hx:z-20 hx:max-h-64 hx:overflow-auto hx:rounded-lg hx:border hx:border-gray-200 hx:bg-white hx:p-1 hx:text-sm hx:shadow-lg hx:dark:border-neutral-700 hx:dark:bg-neutral-900"
       style="min-width: 12rem;" role="menu" aria-label="{{ $label }}">
     {{- range . }}
+      {{- if .separator }}
+    <li role="separator" class="hx:my-1 hx:border-t hx:border-gray-200 hx:dark:border-neutral-700"></li>
+        {{- continue }}
+      {{- end }}
       {{- $external := strings.HasPrefix .url "http" }}
     <li role="none" class="hextra-nav-menu-item hx:flex hx:flex-col">
       <a href="{{ .url }}" role="menuitem" class="{{ $item }}"{{ if $external }} target="_blank" rel="noreferrer"{{ end }}>

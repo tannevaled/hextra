@@ -13,6 +13,7 @@
               {{ partial "components/page-context-menu" . }}
             </div>
           {{ end }}
+          {{ partial "components/page-meta.html" . }}
           {{ partial "custom/content-begin.html" . }}
           {{ .Content }}
           {{ partial "custom/content-end.html" . }}

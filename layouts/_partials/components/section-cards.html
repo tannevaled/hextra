@@ -1,0 +1,19 @@
+{{- /* On a docs section page (or the home of a docs site): a card for every
+       child page and section, by weight, with its description as subtitle
+       (params.page.sectionCards; a page opts out with sectionCards: false).
+       A section with no text of its own then still says what it holds. */ -}}
+{{- if and site.Params.page.sectionCards (ne .Params.sectionCards false) -}}
+  {{- $children := where (union .RegularPages .Sections).ByWeight "Params.sidebar.exclude" "!=" true -}}
+  {{- with $children -}}
+    {{- /* RelPermalink already holds the base path, and relURL leaves a link
+           starting with "/" as it is (measured with baseURL .../docs/development/). */ -}}
+    {{- $cards := "" -}}
+    {{- range . -}}
+      {{- $link := .RelPermalink -}}
+      {{- $cards = printf "%s%s" $cards (partial "shortcodes/card.html" (dict "link" $link "title" .LinkTitle "subtitle" .Description "icon" (cond .IsSection "folder" "document-text"))) -}}
+    {{- end -}}
+    <div class="hextra-section-cards">
+      {{- partial "shortcodes/cards.html" (dict "cols" 2 "content" ($cards | safeHTML)) -}}
+    </div>
+  {{- end -}}
+{{- end -}}
