@@ -1,5 +1,8 @@
 {{- $page := .context -}}
-{{- $iconName := .iconName | default "globe-alt" -}}
+{{- /* The switch's icon: given by the caller, else params.languageSwitch.icon,
+       else globe-alt. It is shown even when the language has a flag, before
+       it: the flag says which language, the icon says this changes it. */ -}}
+{{- $iconName := .iconName | default site.Params.languageSwitch.icon | default "globe-alt" -}}
 {{- $iconHeight := .iconHeight | default 12 -}}
 {{- $location := .location -}}
 
@@ -25,10 +28,9 @@
       aria-haspopup="menu"
     >
       <div class="hx:flex hx:items-center hx:gap-2 hx:capitalize">
+        {{- partial "utils/icon" (dict "name" $iconName "attributes" (printf "height=%d" $iconHeight)) -}}
         {{- with site.Params.flag -}}
           <img src="{{ . | relURL }}" alt="" width="{{ div (mul $iconHeight 4) 3 }}" height="{{ $iconHeight }}" style="border-radius:2px">
-        {{- else -}}
-          {{- partial "utils/icon" (dict "name" $iconName "attributes" (printf "height=%d" $iconHeight)) -}}
         {{- end -}}
         {{- if not $hideLabel }}<span>{{ $currentLanguageLabel }}</span>{{ end -}}
       </div>
