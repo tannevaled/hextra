@@ -58,3 +58,9 @@
 [data-state="open"] .hextra-combo-chevron-up {
   transform: rotate(0deg);
 }
+
+/* The line between groups of the logo menu. gray-200 on white was measured
+   as hard to see; gray-300 / neutral-600, inset from the menu's edges. */
+.hextra-logo-menu-separator {
+  @apply hx:my-1.5 hx:mx-2 hx:border-t hx:border-gray-300 hx:dark:border-neutral-600;
+}
