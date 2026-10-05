@@ -29,6 +29,9 @@ defaults:
 jobs:
   # Build job
   build:
+    # Upstream's demo site (imfing.github.io/hextra). A fork has no Pages site
+    # of its own, so here this job could only fail, on every push to main.
+    if: github.repository == 'imfing/hextra'
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.161.1
