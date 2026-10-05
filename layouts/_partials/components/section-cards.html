@@ -10,7 +10,12 @@
     {{- $cards := "" -}}
     {{- range . -}}
       {{- $link := .RelPermalink -}}
-      {{- $cards = printf "%s%s" $cards (partial "shortcodes/card.html" (dict "link" $link "title" .LinkTitle "subtitle" .Description "icon" (cond .IsSection "folder" "document-text"))) -}}
+      {{- /* The card's icon: the page's own (front matter icon), else for a page
+             its section's, else a folder or a document. */ -}}
+      {{- $icon := .Params.icon -}}
+      {{- if and (not $icon) (not .IsSection) }}{{ with .Parent }}{{ $icon = .Params.icon }}{{ end }}{{ end -}}
+      {{- $icon = $icon | default (cond .IsSection "folder" "document-text") -}}
+      {{- $cards = printf "%s%s" $cards (partial "shortcodes/card.html" (dict "link" $link "title" .LinkTitle "subtitle" .Description "icon" $icon)) -}}
     {{- end -}}
     <div class="hextra-section-cards">
       {{- partial "shortcodes/cards.html" (dict "cols" 2 "content" ($cards | safeHTML)) -}}
