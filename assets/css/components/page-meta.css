@@ -33,5 +33,14 @@
   @apply hx:mt-12 hx:mb-8 hx:flex hx:flex-col hx:gap-0.5 hx:text-xs hx:text-gray-500 hx:ltr:text-right hx:rtl:text-left hx:dark:text-gray-400;
 }
 .hextra-page-history p {
-  @apply hx:inline-flex hx:items-center hx:gap-1.5 hx:ltr:justify-end hx:rtl:justify-start;
+  @apply hx:inline-flex hx:items-center hx:gap-1 hx:ltr:justify-end hx:rtl:justify-start;
+}
+
+/* Tags at the bottom of the right sidebar (toc.tagIcons): after a line, each
+   with a tag icon. */
+.hextra-toc-tags {
+  @apply hx:w-full hx:mt-2 hx:pt-3 hx:border-t hx:border-gray-200 hx:dark:border-neutral-800 hx:flex hx:flex-wrap hx:gap-x-3 hx:gap-y-1.5 hx:text-xs hx:font-medium;
+}
+.hextra-toc-tags a {
+  @apply hx:inline-flex hx:items-center hx:gap-1 hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-100 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50;
 }

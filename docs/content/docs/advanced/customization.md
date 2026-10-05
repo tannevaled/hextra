@@ -403,6 +403,7 @@ params:
     sectionCards: true        # on a docs section page, a card per child page or section
   toc:
     displayTags: true         # the page's tags at the bottom of the right sidebar
+    tagIcons: true            # …last, after a line, each with a tag icon
     displayRelated: true      # then the pages sharing the most tags with it
     relatedLimit: 5
 ```

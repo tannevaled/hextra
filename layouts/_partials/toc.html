@@ -30,7 +30,7 @@
 
       {{/* TOC bottom part */}}
       <div class="{{ $borderClass }} hx:sticky hx:bottom-0 hx:flex hx:flex-col hx:items-start hx:gap-2 hx:pb-8 hx:border-gray-200 hx:dark:border-neutral-800 hx:contrast-more:border-t hx:contrast-more:border-neutral-400 hx:contrast-more:shadow-none hx:contrast-more:dark:border-neutral-400">
-        {{- if and site.Params.toc.displayTags .Params.tags -}}
+        {{- if and site.Params.toc.displayTags .Params.tags (not site.Params.toc.tagIcons) -}}
           <div class="hx:flex hx:items-start hx:gap-x-2 hx:font-medium hx:text-xs">
             <div class="hx:text-gray-500 hx:dark:text-gray-400 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50">{{ $tags }}</div>
             <div class="hx:flex hx:flex-wrap hx:gap-y-1">
@@ -39,6 +39,19 @@
           </div>
         {{- end -}}
         {{- partial "components/related-pages.html" . -}}
+        {{- if and site.Params.toc.displayTags site.Params.toc.tagIcons .Params.tags -}}
+          {{- /* toc.tagIcons: the tags last, after a line, each with a tag icon. */ -}}
+          <div class="hextra-toc-tags" aria-label="{{ $tags }}">
+            {{- range $tag := .Params.tags -}}
+              {{- with site.GetPage (printf "/tags/%s" $tag) -}}
+                <a href="{{ .RelPermalink }}">
+                  {{- partial "utils/icon.html" (dict "name" "tag" "attributes" `height=12 width=12 aria-hidden="true"`) -}}
+                  <span>{{ $tag }}</span>
+                </a>
+              {{- end -}}
+            {{- end -}}
+          </div>
+        {{- end -}}
         {{- if site.Params.editURL.enable -}}
           {{- $editURL := site.Params.editURL.base | default "" -}}
           {{- with .Params.editURL -}}
