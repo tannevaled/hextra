@@ -17,7 +17,7 @@
       style="min-width: 12rem;" role="menu" aria-label="{{ $label }}">
     {{- range . }}
       {{- if .separator }}
-    <li role="separator" class="hx:my-1 hx:border-t hx:border-gray-200 hx:dark:border-neutral-700"></li>
+    <li role="separator" class="hextra-logo-menu-separator"></li>
         {{- continue }}
       {{- end }}
       {{- $external := strings.HasPrefix .url "http" }}
