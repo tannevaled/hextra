@@ -32,3 +32,6 @@
 .hextra-page-history {
   @apply hx:mt-12 hx:mb-8 hx:flex hx:flex-col hx:gap-0.5 hx:text-xs hx:text-gray-500 hx:ltr:text-right hx:rtl:text-left hx:dark:text-gray-400;
 }
+.hextra-page-history p {
+  @apply hx:inline-flex hx:items-center hx:gap-1.5 hx:ltr:justify-end hx:rtl:justify-start;
+}
