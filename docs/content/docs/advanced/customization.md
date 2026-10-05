@@ -381,7 +381,7 @@ Icon-only navbar links that leave the site get a small up-right arrow on their t
 
 ## Language Flags
 
-Give each language a `flag` parameter (an image path, relative to `static/`) to show it in the language switch, on the button and on every option, instead of the globe icon:
+Give each language a `flag` parameter (an image path, relative to `static/`) to show it in the language switch, on the button (after the switch's icon) and on every option:
 
 ```yaml {filename="hugo.yaml"}
 languages:
@@ -389,6 +389,16 @@ languages:
     label: English
     params:
       flag: images/flags/gb.svg
+```
+
+## Language Switch Icon
+
+The language switch shows a globe by default. Set `params.languageSwitch.icon` to another icon name of the theme — `translate`, for instance — to use it wherever the switch appears:
+
+```yaml {filename="hugo.yaml"}
+params:
+  languageSwitch:
+    icon: translate
 ```
 
 ## Custom Layouts
