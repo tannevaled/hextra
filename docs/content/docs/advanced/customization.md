@@ -424,6 +424,18 @@ sh themes/hextra/scripts/page-history.sh > data/pagehistory.json
 
 A page's front matter `author` (a name or a list) or `authors` replaces the creator from git, and `date` its creation date. Only names are shown, escaped — never an e-mail address. Generated pages (tag lists) show no history.
 
+## Dark Reader
+
+The Dark Reader browser extension darkens a page shown in the light theme by recolouring it, so images that have a dark variant (a logo with `navbar.logo.dark`, for instance) keep their light version on what has become a dark background. A site with its own dark mode can ask the extension to stand aside:
+
+```yaml {filename="hugo.yaml"}
+params:
+  theme:
+    darkreaderLock: true   # <meta name="darkreader-lock">
+```
+
+Visitors who want a dark page then get the theme's own dark mode, through the theme toggle or their system preference.
+
 ## Search Engine Verification
 
 To prove ownership of the site to a search engine, give its code:
