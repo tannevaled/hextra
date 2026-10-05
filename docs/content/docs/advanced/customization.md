@@ -407,7 +407,7 @@ params:
     relatedLimit: 5
 ```
 
-Section cards show each child's title and description, ordered by weight; a page opts out with `sectionCards: false` in its front matter. Related pages are counted within the current language.
+Section cards show each child's title and description, ordered by weight; a page opts out with `sectionCards: false` in its front matter. A card's icon is the page's `icon` front matter (any icon of the theme), else its section's, else a folder or a document. Related pages are counted within the current language.
 
 ## Search Engine Verification
 
