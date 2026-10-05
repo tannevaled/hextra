@@ -459,6 +459,21 @@ params:
     icon: translate
 ```
 
+## Versioned Documentation Kit
+
+A documentation site can publish one build per version — each semver tag `vX.Y.Z` and the default branch as `development` — under `<site>/docs/<version>/`, served by another project's Pages (a showcase site owning the domain). The theme ships the three pieces:
+
+- `components/version-select.html`: the navbar version dropdown, filled at runtime from `<docs root>/versions.json`; use it as a main menu item of `type: partial`.
+- `ci/docs.gitlab-ci.yml`: GitLab CI for the documentation project — build with the version in `baseURL`, package into the generic package registry, create a release for tags, trigger the showcase. Variables: `DOCS_URL`, `DOCS_PACKAGE`, `DOCS_ARCHIVE`, `DOCS_SHOWCASE`, `DOCS_TITLE`.
+- `ci/showcase-docs.gitlab-ci.yml`: a `.deploy-docs` script for the showcase's Pages job, which downloads every published version into `public/docs/`, writes `versions.json` and redirects `/docs/` to the latest release. Variables: `DOCS_PROJECT`, `DOCS_PACKAGE`, `DOCS_ARCHIVE`, `DOCS_TITLE`.
+
+Include the CI files remotely, pinned to a commit of the theme:
+
+```yaml {filename=".gitlab-ci.yml"}
+include:
+  - remote: https://raw.githubusercontent.com/tannevaled/hextra/<commit>/ci/docs.gitlab-ci.yml
+```
+
 ## Custom Layouts
 
 The layouts of the theme can be overridden by creating a file with the same name in the `layouts` directory of your site.
