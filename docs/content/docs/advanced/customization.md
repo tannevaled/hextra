@@ -409,6 +409,20 @@ params:
 
 Section cards show each child's title and description, ordered by weight; a page opts out with `sectionCards: false` in its front matter. A card's icon is the page's `icon` front matter (any icon of the theme), else its section's, else a folder or a document. Related pages are counted within the current language.
 
+## Page History
+
+`params.page.history: true` replaces the "last updated" line with when, and by whom, a page was created and last modified:
+
+> Created on October 2, 2026 by Ada Lovelace · Modified on October 5, 2026 by Alan Turing
+
+Modification comes from Hugo's git info (`enableGitInfo: true`). Creation needs a page's **first** commit, which Hugo does not read: generate it before building, from the site's root, with the full history (not a shallow clone):
+
+```shell
+sh themes/hextra/scripts/page-history.sh > data/pagehistory.json
+```
+
+A page's front matter `author` (a name or a list) or `authors` replaces the creator from git, and `date` its creation date. Only names are shown, escaped — never an e-mail address. Generated pages (tag lists) show no history.
+
 ## Search Engine Verification
 
 To prove ownership of the site to a search engine, give its code:

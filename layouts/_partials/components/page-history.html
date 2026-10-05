@@ -1,0 +1,47 @@
+{{- /* "Created on <date> by <author> · Modified on <date> by <author>", at the
+       foot of a page (params.page.history).
+
+  Creation: the page's front matter date if set, else its first git commit
+  from data/pagehistory.json (scripts/page-history.sh). Author: the front
+  matter author / authors if set, else that commit's author. Modification:
+  Hugo's Lastmod and GitInfo. Names only, escaped; no e-mail. */ -}}
+{{- $page := . -}}
+{{- /* Generated pages (taxonomy lists) have no file, so no history to tell. */ -}}
+{{- if .File -}}
+{{- $git := dict -}}
+{{- with .File -}}
+  {{- $key := strings.TrimPrefix (printf "%s/" hugo.WorkingDir) .Filename -}}
+  {{- $git = index (site.Data.pagehistory | default dict) $key | default dict -}}
+{{- end -}}
+
+{{- $created := "" -}}
+{{- with .Params.date }}{{ $created = time.AsTime . }}{{ else }}{{ with $git.created }}{{ $created = time.AsTime . }}{{ end }}{{ end -}}
+{{- $author := "" -}}
+{{- with .Params.authors }}{{ $author = delimit . ", " }}{{ else }}{{ with .Params.author }}{{ $author = cond (reflect.IsSlice .) (delimit . ", ") . }}{{ else }}{{ $author = $git.author }}{{ end }}{{ end -}}
+{{- $editor := "" }}{{ with .GitInfo }}{{ $editor = .AuthorName }}{{ end -}}
+
+<div class="hextra-page-history">
+  {{- with $created }}
+  <p>
+    {{- $d := printf `<time datetime="%s">%s</time>` (time.Format "2006-01-02" .) (partial "utils/format-date" .) -}}
+    {{- if $author -}}
+      {{ T "pageCreatedBy" (dict "date" $d "author" (htmlEscape $author)) | default (printf "Created on %s by %s" $d (htmlEscape $author)) | safeHTML }}
+    {{- else -}}
+      {{ T "pageCreated" (dict "date" $d) | default (printf "Created on %s" $d) | safeHTML }}
+    {{- end -}}
+  </p>
+  {{- end }}
+  {{- with $page.Lastmod }}
+  <p>
+    {{- $d := printf `<time datetime="%s">%s</time>` (time.Format "2006-01-02" .) (partial "utils/format-date" .) -}}
+    {{- if $editor -}}
+      {{ T "pageModifiedBy" (dict "date" $d "author" (htmlEscape $editor)) | default (printf "Modified on %s by %s" $d (htmlEscape $editor)) | safeHTML }}
+    {{- else -}}
+      {{ T "pageModified" (dict "date" $d) | default (printf "Modified on %s" $d) | safeHTML }}
+    {{- end -}}
+  </p>
+  {{- end }}
+</div>
+{{- else -}}
+<div class="hx:mt-16"></div>
+{{- end -}}

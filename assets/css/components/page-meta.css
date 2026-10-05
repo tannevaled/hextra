@@ -27,3 +27,8 @@
 .hextra-related-pages a {
   @apply hx:text-gray-500 hx:hover:text-gray-900 hx:dark:text-gray-400 hx:dark:hover:text-gray-100 hx:contrast-more:text-gray-800 hx:contrast-more:dark:text-gray-50;
 }
+
+/* Creation and modification line at the foot of a page (components/page-history). */
+.hextra-page-history {
+  @apply hx:mt-12 hx:mb-8 hx:flex hx:flex-col hx:gap-0.5 hx:text-xs hx:text-gray-500 hx:ltr:text-right hx:rtl:text-left hx:dark:text-gray-400;
+}
