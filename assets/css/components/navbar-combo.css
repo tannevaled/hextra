@@ -30,3 +30,16 @@
     display: none;
   }
 }
+
+/* The logo menu's chevron points forward while the menu is closed and turns
+   down when it opens (nav-menu.js sets data-state on the toggle). */
+.hextra-logo-menu-toggle svg {
+  transition: transform 0.2s ease-in-out;
+  transform: rotate(-90deg);
+}
+[dir="rtl"] .hextra-logo-menu-toggle svg {
+  transform: rotate(90deg);
+}
+.hextra-logo-menu-toggle[data-state="open"] svg {
+  transform: rotate(0deg);
+}
