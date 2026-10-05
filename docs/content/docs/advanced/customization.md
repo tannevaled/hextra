@@ -304,7 +304,7 @@ They are rendered at the start of the switches row — the bottom of the sidebar
 
 ## Related Sites From the Logo
 
-`params.navbar.logo.menu` lists related sites. A chevron then appears beside the navbar title and opens them as a dropdown, while the logo itself still leads home. Each entry has a `name`, a `url`, and optionally a `logo` and a `logoDark` image; links leaving the site open in a new tab with an up-right arrow.
+`params.navbar.logo.menu` lists related sites. A chevron then appears beside the navbar title and opens them as a dropdown, while the logo itself still leads home. Each entry has a `name`, a `url`, and optionally a `logo` and a `logoDark` image; links leaving the site open in a new tab with an up-right arrow. An entry `separator: true` draws a line between two groups.
 
 ```yaml {filename="hugo.yaml"}
 params:
@@ -389,6 +389,37 @@ languages:
     label: English
     params:
       flag: images/flags/gb.svg
+```
+
+## Page Metadata
+
+Four options, all off by default, use a page's front matter `description` and `tags`:
+
+```yaml {filename="hugo.yaml"}
+params:
+  page:
+    displayDescription: true  # the description as a subtitle under a docs page title
+    displayReadingTime: true  # "3 min read" under it
+    sectionCards: true        # on a docs section page, a card per child page or section
+  toc:
+    displayTags: true         # the page's tags at the bottom of the right sidebar
+    displayRelated: true      # then the pages sharing the most tags with it
+    relatedLimit: 5
+```
+
+Section cards show each child's title and description, ordered by weight; a page opts out with `sectionCards: false` in its front matter. Related pages are counted within the current language.
+
+## Search Engine Verification
+
+To prove ownership of the site to a search engine, give its code:
+
+```yaml {filename="hugo.yaml"}
+params:
+  seo:
+    verification:
+      google: "…"   # google-site-verification
+      bing: "…"     # msvalidate.01
+      yandex: "…"   # yandex-verification
 ```
 
 ## Language Switch Icon

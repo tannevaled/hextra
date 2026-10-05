@@ -17,6 +17,12 @@
     {{ end -}}
   </title>
   <meta name="description" content="{{ partial "utils/page-description.html" . }}" />
+  {{- /* Search engine ownership checks: params.seo.verification.{google,bing,yandex}. */ -}}
+  {{- with site.Params.seo.verification }}
+    {{- with .google }}<meta name="google-site-verification" content="{{ . }}" />{{ end }}
+    {{- with .bing }}<meta name="msvalidate.01" content="{{ . }}" />{{ end }}
+    {{- with .yandex }}<meta name="yandex-verification" content="{{ . }}" />{{ end }}
+  {{- end }}
 
   {{- with .Params.canonical -}}
     <link rel="canonical" href="{{ . }}" itemprop="url" />

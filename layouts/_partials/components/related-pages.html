@@ -1,0 +1,25 @@
+{{- /* Pages sharing tags with this one, most shared first
+       (params.toc.displayRelated, at most params.toc.relatedLimit, default 5),
+       within the current language. */ -}}
+{{- $page := . -}}
+{{- if and site.Params.toc.displayRelated .Params.tags -}}
+  {{- $scored := slice -}}
+  {{- range site.RegularPages.ByTitle -}}
+    {{- $other := . -}}
+    {{- if and (ne $other.RelPermalink $page.RelPermalink) $other.Params.tags -}}
+      {{- with intersect $other.Params.tags $page.Params.tags -}}
+        {{- $scored = $scored | append (dict "score" (len .) "page" $other) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- with first (site.Params.toc.relatedLimit | default 5) (sort $scored "score" "desc") -}}
+  <div class="hextra-related-pages">
+    <p class="hextra-related-pages-title">{{ (T "relatedPages") | default "Related pages" }}</p>
+    <ul>
+      {{- range . }}
+      <li><a href="{{ .page.RelPermalink }}">{{ .page.LinkTitle }}</a></li>
+      {{- end }}
+    </ul>
+  </div>
+  {{- end -}}
+{{- end -}}

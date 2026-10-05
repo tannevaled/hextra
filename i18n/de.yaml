@@ -46,3 +46,5 @@ tags: "Schlagwörter"
 viewAsMarkdown: "Als Markdown anzeigen"
 
 relatedSites: "Verwandte Seiten"
+readingTime: "{{ . }} Min. Lesezeit"
+relatedPages: "Verwandte Seiten"

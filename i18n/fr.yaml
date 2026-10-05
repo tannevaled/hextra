@@ -46,3 +46,5 @@ tags: "Étiquettes"
 viewAsMarkdown: "Voir en Markdown"
 
 relatedSites: "Sites associés"
+readingTime: "{{ . }} min de lecture"
+relatedPages: "Pages liées"

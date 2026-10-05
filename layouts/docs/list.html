@@ -13,8 +13,10 @@
               {{ partial "components/page-context-menu" . }}
             </div>
           {{ end }}
+          {{ partial "components/page-meta.html" . }}
           {{ partial "custom/content-begin.html" . }}
           {{ .Content }}
+          {{ partial "components/section-cards.html" . }}
           {{ partial "custom/content-end.html" . }}
         </div>
         {{ partial "components/last-updated.html" . }}

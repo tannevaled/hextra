@@ -1,0 +1,19 @@
+{{- /* Under a docs page's title: its description as a subtitle
+       (params.page.displayDescription) and its reading time
+       (params.page.displayReadingTime). Both off by default. */ -}}
+{{- $desc := "" -}}
+{{- if site.Params.page.displayDescription }}{{ $desc = .Description }}{{ end -}}
+{{- $time := and site.Params.page.displayReadingTime (gt .ReadingTime 0) -}}
+{{- if or $desc $time -}}
+<div class="hextra-page-meta not-prose">
+  {{- with $desc }}
+  <p class="hextra-page-description">{{ . }}</p>
+  {{- end }}
+  {{- if $time }}
+  <p class="hextra-page-reading-time">
+    {{- partial "utils/icon.html" (dict "name" "clock" "attributes" "height=14 width=14") -}}
+    <span>{{ T "readingTime" .ReadingTime | default (printf "%d min" .ReadingTime) }}</span>
+  </p>
+  {{- end }}
+</div>
+{{- end -}}
