@@ -17,6 +17,11 @@
     {{ end -}}
   </title>
   <meta name="description" content="{{ partial "utils/page-description.html" . }}" />
+  {{- /* params.theme.darkreaderLock: ask the Dark Reader extension to stand aside.
+         It darkens a page shown in the light theme by recolouring it, while the
+         theme keeps its light-only images (logos with dark navy) on what has
+         become a dark background; the theme's own dark mode swaps them. */ -}}
+  {{- if site.Params.theme.darkreaderLock }}<meta name="darkreader-lock" />{{ end }}
   {{- /* Search engine ownership checks: params.seo.verification.{google,bing,yandex}. */ -}}
   {{- with site.Params.seo.verification }}
     {{- with .google }}<meta name="google-site-verification" content="{{ . }}" />{{ end }}
