@@ -43,3 +43,18 @@
 .hextra-logo-menu-toggle[data-state="open"] svg {
   transform: rotate(0deg);
 }
+
+/* A combo's chevron says which way its menu will go, and turns when it opens:
+   down then up for a menu opening downward, up then down (-up) for one opening
+   upward, like the language switch at the foot of the sidebar. theme.js,
+   lang.js and nav-menu.js set data-state on the toggle. */
+.hextra-combo-chevron {
+  transition: transform 0.2s ease-in-out;
+}
+[data-state="open"] .hextra-combo-chevron,
+.hextra-combo-chevron-up {
+  transform: rotate(180deg);
+}
+[data-state="open"] .hextra-combo-chevron-up {
+  transform: rotate(0deg);
+}

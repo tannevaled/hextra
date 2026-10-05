@@ -32,7 +32,12 @@
         {{- with site.Params.flag -}}
           <img src="{{ . | relURL }}" alt="" width="{{ div (mul $iconHeight 4) 3 }}" height="{{ $iconHeight }}" style="border-radius:2px">
         {{- end -}}
-        {{- if not $hideLabel }}<span>{{ $currentLanguageLabel }}</span>{{ end -}}
+        {{- if not $hideLabel }}<span>{{ $currentLanguageLabel }}</span>
+          {{- /* The menu opens downward in the navbar (location top), upward
+                 elsewhere: the chevron points the way it will open. */ -}}
+          {{- $chevron := cond (eq $location "top") "hextra-combo-chevron" "hextra-combo-chevron hextra-combo-chevron-up" -}}
+          {{- partial "utils/icon.html" (dict "name" "chevron-down" "attributes" (printf `height=12 class="%s"` $chevron)) -}}
+        {{- end -}}
       </div>
     </button>
     <ul
