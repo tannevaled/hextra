@@ -1,4 +1,6 @@
 // {{ $faviconDarkExists := fileExists (path.Join "static" "favicon-dark.svg") }}
+// {{/* fileExists sees the project's static/ folder only, not files mounted onto static (module mounts): params.favicon.dark says the dark favicon is there. */}}
+// {{ with site.Params.favicon }}{{ if .dark }}{{ $faviconDarkExists = true }}{{ end }}{{ end }}
 (function () {
   const faviconEl = document.getElementById("favicon-svg");
   const faviconDarkExists = "{{ $faviconDarkExists }}" === "true";
