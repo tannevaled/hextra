@@ -289,6 +289,20 @@ For enhanced dark mode support, add `favicon-dark.svg` to your `static` folder a
 
 The dark mode favicon switching works across all modern browsers, including Firefox, and provides a seamless experience that matches your site's theme.
 
+Hextra detects `favicon-dark.svg` in the project's own `static` folder only. When the favicons come from a [module mount](https://gohugo.io/configuration/module/#mounts) instead — a shared branding repository mounted onto `static`, for instance — say that the dark one is there:
+
+```yaml {filename="hugo.yaml"}
+module:
+  mounts:
+    - source: static
+      target: static
+    - source: branding/favicons/my-site
+      target: static
+params:
+  favicon:
+    dark: true   # favicon-dark.svg is provided by a mount
+```
+
 #### Additional Formats
 
 While `favicon.ico` is generally for older browsers, modern browsers support SVG favicons which are preferred for their scalability and small file size.
