@@ -464,7 +464,8 @@ params:
 A documentation site can publish one build per version — each semver tag `vX.Y.Z` and the default branch as `development` — under `<site>/docs/<version>/`, served by another project's Pages (a showcase site owning the domain). The theme ships the three pieces:
 
 - `components/version-select.html`: the navbar version dropdown, filled at runtime from `<docs root>/versions.json`; use it as a main menu item of `type: partial`.
-- `ci/docs.gitlab-ci.yml`: GitLab CI for the documentation project — build with the version in `baseURL`, package into the generic package registry, create a release for tags, trigger the showcase. Variables: `DOCS_URL`, `DOCS_PACKAGE`, `DOCS_ARCHIVE`, `DOCS_SHOWCASE`, `DOCS_TITLE`.
+- `ci/docs.gitlab-ci.yml`: GitLab CI for the documentation project — build every version with the version in `baseURL`, package each into the generic package registry, create a release for tags, trigger the showcase. Variables: `DOCS_URL`, `DOCS_PACKAGE`, `DOCS_ARCHIVE`, `DOCS_SHOWCASE`, `DOCS_TITLE`.
+  **The look does not depend on the version**: a version is its `content/` at a ref (`development` = the default branch, plus every `vX.Y.Z` tag); the theme, `hugo.yaml`, layouts, assets and logos are always the default branch's. Every main or tag pipeline rebuilds all versions that way with [`docsversions`](https://github.com/go-fleettools/fleettools) (`DOCSVERSIONS_VERSION`), so a change of look reaches every published version at the next pipeline. A merge request previews its own look on the development content.
 - `ci/showcase-docs.gitlab-ci.yml`: a `.deploy-docs` script for the showcase's Pages job, which downloads every published version into `public/docs/`, writes `versions.json` and redirects `/docs/` to the latest release. Variables: `DOCS_PROJECT`, `DOCS_PACKAGE`, `DOCS_ARCHIVE`, `DOCS_TITLE`.
 
 Include the CI files remotely, pinned to a commit of the theme:
