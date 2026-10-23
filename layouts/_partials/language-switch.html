@@ -1,5 +1,8 @@
 {{- $page := .context -}}
-{{- $iconName := .iconName | default "globe-alt" -}}
+{{- /* The switch's icon: given by the caller, else params.languageSwitch.icon,
+       else globe-alt. It is shown even when the language has a flag, before
+       it: the flag says which language, the icon says this changes it. */ -}}
+{{- $iconName := .iconName | default site.Params.languageSwitch.icon | default "globe-alt" -}}
 {{- $iconHeight := .iconHeight | default 12 -}}
 {{- $location := .location -}}
 
@@ -26,6 +29,10 @@
     >
       <div class="hx:flex hx:items-center hx:gap-2 hx:capitalize">
         {{- partial "utils/icon" (dict "name" $iconName "attributes" (printf "height=%d" $iconHeight)) -}}
+        {{- $flag := partialCached "utils/flag.html" site.Params.flag (string site.Params.flag) site.Language.Lang -}}
+        {{- with $flag -}}
+          <img src="{{ . }}" alt="" width="{{ div (mul $iconHeight 4) 3 }}" height="{{ $iconHeight }}" style="border-radius:2px">
+        {{- end -}}
         {{- if not $hideLabel }}<span>{{ $currentLanguageLabel }}</span>{{ end -}}
       </div>
     </button>
@@ -44,7 +51,15 @@
             role="menuitem"
             class="hx:text-gray-700 hx:dark:text-gray-300 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:hover:bg-neutral-800 hx:dark:hover:text-gray-100 hx:relative hx:cursor-pointer hx:whitespace-nowrap hx:rounded-sm hx:py-1.5 hx:transition-colors hx:ltr:pl-3 hx:ltr:pr-9 hx:rtl:pr-3 hx:rtl:pl-9"
           >
-            {{- $languageLabel -}}
+            {{- $flag := partialCached "utils/flag.html" .Params.flag (string .Params.flag) site.Language.Lang -}}
+            {{- with $flag -}}
+              <span class="hx:inline-flex hx:items-center hx:gap-2">
+                <img src="{{ . }}" alt="" width="16" height="12" style="border-radius:2px">
+                {{- $languageLabel -}}
+              </span>
+            {{- else -}}
+              {{- $languageLabel -}}
+            {{- end -}}
             {{- if eq $language.Lang $currentLanguageLang -}}
               <span class="hx:absolute hx:inset-y-0 hx:flex hx:items-center hx:ltr:right-3 hx:rtl:left-3">
                 {{- partial "utils/icon" (dict "name" "check" "attributes" "height=1em width=1em") -}}
