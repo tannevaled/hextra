@@ -1,0 +1,58 @@
+{{- /* Resolve a language's params.flag to the URL of its image, or "".
+
+  A value containing "/" or "." is a path (relative to static/) or a URL, used
+  as is. Any other value is a flag code: an ISO 3166-1 alpha-2 code ("fr"), or
+  one of flag-icons' other codes ("gb-sct", "es-ct", "eu", "un"). The flag is
+  taken from the site's assets/flags/<code>.svg when there is one, otherwise
+  fetched at build time from params.flags.remote.url (flag-icons' 4x3 flags by
+  default) and published with the site, so pages never load it from a CDN.
+*/ -}}
+{{- $flag := . -}}
+{{- $url := "" -}}
+{{- if $flag -}}
+  {{- $flag = string $flag -}}
+  {{- if or (strings.Contains $flag "/") (strings.Contains $flag ".") -}}
+    {{- $url = $flag | relURL -}}
+  {{- else -}}
+    {{- $code := lower $flag -}}
+    {{- if not (findRE `^[a-z]{2,6}(-[a-z]{2,3})?$` $code) -}}
+      {{- errorf "invalid flag %q: give an ISO 3166-1 alpha-2 code such as \"fr\", a flag-icons code such as \"gb-sct\", or an image path" $flag -}}
+    {{- end -}}
+    {{- $target := printf "flags/%s.svg" $code -}}
+    {{- $res := resources.Get $target -}}
+    {{- if not $res -}}
+      {{- $remoteEnabled := true -}}
+      {{- $remoteURL := "https://cdn.jsdelivr.net/npm/flag-icons@7.5.0/flags/4x3/%s.svg" -}}
+      {{- with site.Params.flags.remote -}}
+        {{- if isset . "enable" -}}
+          {{- $remoteEnabled = .enable -}}
+        {{- end -}}
+        {{- with .url -}}
+          {{- $remoteURL = . -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if not $remoteEnabled -}}
+        {{- errorf "flag %q: no assets/%s in the site, and params.flags.remote.enable is false" $flag $target -}}
+      {{- end -}}
+      {{- $from := printf $remoteURL $code -}}
+      {{- with try (resources.GetRemote $from) -}}
+        {{- with .Err -}}
+          {{- errorf "flag %q: could not retrieve %s: %s" $flag $from . -}}
+        {{- else with .Value -}}
+          {{- if ne .MediaType.SubType "svg" -}}
+            {{- errorf "flag %q: %s is %s, not an SVG image" $flag $from .MediaType -}}
+          {{- end -}}
+          {{- $res = . -}}
+        {{- else -}}
+          {{- errorf "flag %q: %s not found" $flag $from -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+    {{- with $res -}}
+      {{- /* Minified, and published at flags/<code>.svg (minify alone names it
+        <code>.min.svg, or after the remote URL's hash). */ -}}
+      {{- $url = (resources.FromString $target (. | minify).Content).RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $url -}}

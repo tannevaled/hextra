@@ -381,15 +381,35 @@ Icon-only navbar links that leave the site get a small up-right arrow on their t
 
 ## Language Flags
 
-Give each language a `flag` parameter (an image path, relative to `static/`) to show it in the language switch, on the button (after the switch's icon) and on every option:
+Give each language a `flag` parameter to show it in the language switch, on the button (after the switch's icon) and on every option. The value is a flag code:
 
 ```yaml {filename="hugo.yaml"}
 languages:
   en:
     label: English
     params:
-      flag: images/flags/gb.svg
+      flag: gb
+  fr:
+    label: Français
+    params:
+      flag: fr
 ```
+
+Every flag of [flag-icons](https://flagicons.lipis.dev/) (MIT) can be used: the 249 [ISO 3166-1 alpha-2](https://www.iso.org/iso-3166-country-codes.html) codes (`fr`, `de`, `jp`…) and 22 others, such as `eu`, `un`, `gb-sct` (Scotland), `gb-wls` (Wales), `es-ct` (Catalonia), `es-pv` (Basque Country) or `xk` (Kosovo).
+The flag is fetched once at build time, cached by Hugo, and published with the site, so visitors' browsers never load it from a CDN.
+
+- To provide your own image for a code, or to build offline, put it in your site's `assets/flags/<code>.svg`: it is used first.
+- To fetch flags from elsewhere (a mirror, another version), set the URL template, where `%s` is the code; set `enable: false` to use only `assets/flags/`:
+
+  ```yaml {filename="hugo.yaml"}
+  params:
+    flags:
+      remote:
+        enable: true
+        url: https://cdn.jsdelivr.net/npm/flag-icons@7.5.0/flags/4x3/%s.svg
+  ```
+
+A value containing `/` or `.` is an image path relative to `static/` (or a URL) and is used as is, e.g. `flag: images/flags/gb.svg`.
 
 ## Page Metadata
 
