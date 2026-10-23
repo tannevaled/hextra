@@ -253,6 +253,19 @@ The page hooks are rendered inside the page's `<main>` element. The content hook
 
 Each partial receives the current Hugo page as context, so you can use page parameters, site parameters, and other Hugo template features.
 
+## Custom Switches
+
+To add items next to the theme toggle and the language switch, create `layouts/_partials/custom/switches.html` in your site.
+They are rendered just before the theme toggle, at the bottom of the sidebar, or in the footer on pages without a sidebar. The partial receives the current page as context.
+
+```html {filename="layouts/_partials/custom/switches.html"}
+<a href="https://example.org" title="Example" class="hx:p-2" target="_blank" rel="noreferrer">
+  {{- partial "utils/icon.html" (dict "name" "globe-alt" "attributes" "height=16") -}}
+</a>
+```
+
+The switches row exists only on multilingual sites or when the theme toggle is displayed (`params.theme.displayToggle`), so the partial is not rendered when both are off.
+
 ## Custom Layouts
 
 The layouts of the theme can be overridden by creating a file with the same name in the `layouts` directory of your site.
