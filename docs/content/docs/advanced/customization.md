@@ -355,6 +355,32 @@ params:
 
 The box is the `hextra-navbar-combo` class, which a site's own navbar dropdown can take to look the same.
 
+## Language Switch as a Navbar Combo, and Where It Is Drawn
+
+The language switch takes the same form with `combo: true` on its menu item: the same box, font, spacing and popup as the theme toggle's, so the two read as a pair. On a phone the label goes and the icon and chevron stay, as for the theme toggle.
+
+`params.languageSwitch.location` says where the switch is drawn:
+
+| Value | The switch is drawn |
+| --- | --- |
+| `both` (default) | in the navbar (the menu item) and at the foot of the sidebar (and in the footer of a page without a sidebar) |
+| `navbar` | in the navbar only; the sidebar has no second one |
+| `sidebar` | at the foot of the sidebar only, even if the menu has the item |
+
+```yaml {filename="hugo.yaml"}
+menu:
+  main:
+    - name: Language
+      weight: 4
+      params:
+        type: language-switch
+        combo: true
+        label: true
+params:
+  languageSwitch:
+    location: navbar
+```
+
 ## Forge Icons
 
 The icon set includes `github`, `gitlab`, `codeberg`, `forgejo` and `git`, so a navbar link to the source repository can show the right forge:

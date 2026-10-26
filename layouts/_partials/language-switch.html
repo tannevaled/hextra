@@ -5,6 +5,9 @@
 {{- $iconName := .iconName | default site.Params.languageSwitch.icon | default "globe-alt" -}}
 {{- $iconHeight := .iconHeight | default 12 -}}
 {{- $location := .location -}}
+{{- /* combo: the navbar's icon + label + chevron form, drawn in the same box as
+       the theme toggle's (menu item params.combo; see theme-toggle.html). */ -}}
+{{- $combo := .combo | default false -}}
 
 {{- $class := .class | default "hx:h-7 hx:px-2 hx:text-xs hx:text-gray-600 hx:transition-colors hx:dark:text-gray-400 hx:hover:bg-gray-100 hx:hover:text-gray-900 hx:dark:hover:bg-primary-100/5 hx:dark:hover:text-gray-50" -}}
 
@@ -15,13 +18,21 @@
 {{- $currentLanguageLang := site.Language.Lang -}}
 {{- $currentLanguageLabel := partial "utils/hugo-compat/language-label.html" site.Language -}}
 
-{{- if hugo.IsMultilingual -}}
+{{- /* params.languageSwitch.location: where the switch is drawn, "navbar" (the
+       menu item of type language-switch), "sidebar" (the foot of the sidebar,
+       and the footer of a page without one) or "both", the default and what
+       the theme did before the option existed. A caller that passes
+       location "top" is the navbar. */ -}}
+{{- $placement := site.Params.languageSwitch.location | default "both" -}}
+{{- $inNavbar := eq $location "top" -}}
+{{- $shown := or (eq $placement "both") (and $inNavbar (eq $placement "navbar")) (and (not $inNavbar) (eq $placement "sidebar")) -}}
+{{- if and hugo.IsMultilingual $shown -}}
   <div class="hx:flex hx:justify-items-start {{ if $grow }}hx:grow{{ end }}">
     <button
       title="{{ $changeLanguage }}"
       data-state="closed"
       data-location="{{ $location }}"
-      class="hextra-language-switcher hx:cursor-pointer hx:rounded-md hx:text-left hx:font-medium {{ $class }} hx:grow"
+      class="hextra-language-switcher hx:cursor-pointer {{ if not $combo }}hx:rounded-md hx:text-left hx:font-medium {{ end }}{{ $class }} hx:grow"
       type="button"
       aria-label="{{ $changeLanguage }}"
       aria-expanded="false"
