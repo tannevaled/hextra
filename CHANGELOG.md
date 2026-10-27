@@ -10,6 +10,8 @@ Upstream base: imfing/hextra `main` at e58687e (unchanged).
 - Use: `go run github.com/tannevaled/hextra/cmd/pagehistory@v0.21.0 > data/pagehistory.json`. The Go module is tagged `cmd/pagehistory/v0.21.0` as Go requires for a nested module.
 - `scripts/page-history.sh` is deprecated: it prints a note and runs the Go program (needs a Go toolchain). It will be removed in the next MINOR release.
 
+- **version selector parity.** `components/version-select.html` gains what the sites' local copies (`fs-version-select`) had: versions with `properties.hidden` are not listed, aliases are shown after the title (`1.1 (latest)`), the development version may be recognised by name (`params.versions.development`), and an option falls back page, same page in the default language, home in the current language, version home, so it never ends on a 404. Sites drop their `layouts/_partials/custom/version-select.html` and use `partial: components/version-select.html`. Tested by `tests/version-select.spec.ts` (fails on the previous component).
+
 ## v0.20.0
 
 - Language switch as a combo like the theme toggle, with configurable placement (#30).

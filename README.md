@@ -49,6 +49,18 @@ go run github.com/tannevaled/hextra/cmd/pagehistory@v0.21.0 > data/pagehistory.j
 
 It needs the full git history. `scripts/page-history.sh` still works as a deprecated shim and will be removed in the next MINOR release. See the [changelog](CHANGELOG.md).
 
+### Version selector (tannevaled fork)
+
+`components/version-select.html` is the navbar version dropdown for docs published one build per version (mike-format `versions.json`). It handles hidden versions, aliases and multilingual fallbacks, so sites need no local copy:
+
+```yaml
+menu:
+  main:
+    - name: Version
+      weight: 3
+      params: { type: partial, partial: components/version-select.html }
+```
+
 ## Contributing
 
 Contributions are welcome.
