@@ -619,6 +619,16 @@ Options for [`flexsearch.tokenize`](https://github.com/nextapps-de/flexsearch/#t
 - `reverse` - incrementally index words in both directions
 - `full` - index every possible combination
 
+Chinese, Japanese and Korean are written without spaces between words. By default a run of such characters is indexed as overlapping pairs (`アクセシビリティ` becomes `アク`, `クセ`, `セシ`, …), so a query matches the pages that hold its characters next to each other, not every page that merely contains them. A single character still finds the pages it begins a pair in. Set `params.search.flexsearch.cjk` to `char` for the former behaviour, one token per character. Other scripts are unaffected.
+
+```yaml {filename="hugo.yaml"}
+params:
+  search:
+    flexsearch:
+      # bigram | char
+      cjk: bigram
+```
+
 To exclude a page from the FlexSearch search index, set the `excludeSearch: true` in the front matter of the page:
 
 ```yaml {filename="content/docs/guide/configuration.md"}
