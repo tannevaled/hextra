@@ -367,6 +367,8 @@ The language switch takes the same form with `combo: true` on its menu item: the
 | `navbar` | in the navbar only; the sidebar has no second one |
 | `sidebar` | at the foot of the sidebar only, even if the menu has the item |
 
+`params.languageSwitch.flags: false` draws no flag, neither in the button nor in the list: a language is not a country, and the W3C's internationalisation guidance advises against flags for choosing one. The default is `true` (each language's `params.flag`).
+
 ```yaml {filename="hugo.yaml"}
 menu:
   main:
