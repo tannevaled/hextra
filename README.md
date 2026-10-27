@@ -39,6 +39,16 @@ The template repository also includes a [GitHub Actions workflow](https://docs.g
 
 Refer to the [documentation](https://imfing.github.io/hextra/docs) for more information.
 
+### Page history (tannevaled fork)
+
+`params.page.history: true` shows when, and by whom, each page was created. The creation data comes from git, through a small Go program (`cmd/pagehistory`, its own module, tested byte for byte against the shell script it replaces):
+
+```shell
+go run github.com/tannevaled/hextra/cmd/pagehistory@v0.21.0 > data/pagehistory.json
+```
+
+It needs the full git history. `scripts/page-history.sh` still works as a deprecated shim and will be removed in the next MINOR release. See the [changelog](CHANGELOG.md).
+
 ## Contributing
 
 Contributions are welcome.

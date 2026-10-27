@@ -465,8 +465,10 @@ Section cards show each child's title and description, ordered by weight; a page
 Modification comes from Hugo's git info (`enableGitInfo: true`). Creation needs a page's **first** commit, which Hugo does not read: generate it before building, from the site's root, with the full history (not a shallow clone):
 
 ```shell
-sh themes/hextra/scripts/page-history.sh > data/pagehistory.json
+go run github.com/tannevaled/hextra/cmd/pagehistory@v0.21.0 > data/pagehistory.json
 ```
+
+`cmd/pagehistory` is a Go program with its own module (it needs a Go toolchain, not the theme checkout). Pass another content directory as an argument, `-C <dir>` to run git elsewhere, `--max-files` to change the bound (50000 files). It refuses a shallow clone, and file names holding control characters or `..`. The former `sh themes/hextra/scripts/page-history.sh` still works as a deprecated shim, printing the same JSON, and will be removed in the next MINOR release.
 
 A page's front matter `author` (a name or a list) or `authors` replaces the creator from git, and `date` its creation date. Only names are shown, escaped — never an e-mail address. Generated pages (tag lists) show no history.
 
