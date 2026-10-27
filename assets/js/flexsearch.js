@@ -26,11 +26,37 @@
       const tokenize = '{{- site.Params.search.flexsearch.tokenize | default  "forward" -}}';
 
       // https://github.com/TryGhost/Ghost/pull/21148
-      const regex = new RegExp(
-        `[\u{4E00}-\u{9FFF}\u{3040}-\u{309F}\u{30A0}-\u{30FF}\u{AC00}-\u{D7A3}\u{3400}-\u{4DBF}\u{20000}-\u{2A6DF}\u{2A700}-\u{2B73F}\u{2B740}-\u{2B81F}\u{2B820}-\u{2CEAF}\u{2CEB0}-\u{2EBEF}\u{30000}-\u{3134F}\u{31350}-\u{323AF}\u{2EBF0}-\u{2EE5F}\u{F900}-\u{FAFF}\u{2F800}-\u{2FA1F}]|[0-9A-Za-zа-яÀ-ſЀ-ӿ؀-ۿঀ-৿Ḁ-ỿ֐-׿]+`,
-        'mug'
-      );
-      const encode = (str) => { return ('' + str).toLowerCase().match(regex) ?? []; }
+      const cjk = '\u{4E00}-\u{9FFF}\u{3040}-\u{309F}\u{30A0}-\u{30FF}\u{AC00}-\u{D7A3}\u{3400}-\u{4DBF}\u{20000}-\u{2A6DF}\u{2A700}-\u{2B73F}\u{2B740}-\u{2B81F}\u{2B820}-\u{2CEAF}\u{2CEB0}-\u{2EBEF}\u{30000}-\u{3134F}\u{31350}-\u{323AF}\u{2EBF0}-\u{2EE5F}\u{F900}-\u{FAFF}\u{2F800}-\u{2FA1F}';
+      const alphabets = '0-9A-Za-zа-яÀ-ſЀ-ӿ؀-ۿঀ-৿Ḁ-ỿ֐-׿';
+      // "bigram" (default) or "char": how a run of Chinese, Japanese or Korean
+      // characters becomes search tokens (site.Params.search.flexsearch.cjk).
+      const cjkMode = '{{- site.Params.search.flexsearch.cjk | default "bigram" -}}';
+      const bigram = cjkMode !== 'char';
+      // In "char" mode every CJK character is a token of its own (the previous
+      // behaviour); in "bigram" mode a run of them is one match, split below.
+      const regex = new RegExp(`[${cjk}]${bigram ? '+' : ''}|[${alphabets}]+`, 'mug');
+      const startsCjk = new RegExp(`^[${cjk}]`, 'u');
+      // Chinese and Japanese have no spaces between words, and a token per
+      // character makes a query match every page that merely contains its
+      // characters, in any order. A run of CJK characters is instead split into
+      // overlapping pairs ("アクセシビリティ" -> アク, クセ, セシ, ...), which
+      // keeps the characters' neighbourhood. The last character of a run is not
+      // a token of its own: "forward" tokenization already finds it as the first
+      // character of a pair, and a lone trailing character would again match
+      // unrelated pages. A run of one character stays a single token. Latin,
+      // Cyrillic and the other alphabets are unchanged.
+      const encode = (str) => {
+        const tokens = ('' + str).toLowerCase().match(regex) ?? [];
+        if (!bigram) return tokens;
+        const out = [];
+        for (const token of tokens) {
+          if (!startsCjk.test(token)) { out.push(token); continue; }
+          const chars = Array.from(token);
+          if (chars.length === 1) { out.push(token); continue; }
+          for (let i = 0; i + 1 < chars.length; i++) out.push(chars[i] + chars[i + 1]);
+        }
+        return out;
+      }
 
       pageIndex = new FlexSearch.Document({
         tokenize,

@@ -12,6 +12,8 @@ Upstream base: imfing/hextra `main` at e58687e (unchanged).
 
 - **version selector parity.** `components/version-select.html` gains what the sites' local copies (`fs-version-select`) had: versions with `properties.hidden` are not listed, aliases are shown after the title (`1.1 (latest)`), the development version may be recognised by name (`params.versions.development`), and an option falls back page, same page in the default language, home in the current language, version home, so it never ends on a 404. Sites drop their `layouts/_partials/custom/version-select.html` and use `partial: components/version-select.html`. Tested by `tests/version-select.spec.ts` (fails on the previous component).
 
+- **CJK search by pairs of characters.** A run of Chinese, Japanese or Korean characters is indexed (and queried) as overlapping pairs instead of one token per character, so a query no longer matches every page that contains its characters in any order. Measured on the go-widgets documentation (ja, ko, zh-cn) in Chrome, before / after, result links: `アクセシビリティ` 110 / 61, the page about it ranked first instead of an unrelated one; its reversed characters 108 / 4; `성근접` (`접근성` reversed) 58 / 0; `碍障无` (`无障碍` reversed) 52 / 0; `툴킷이름없음` 106 / 47. Latin queries return the same results (`accessibility` 14, `toolkit` 58, `painter` 26). A single character still finds the pages it begins a pair in. `params.search.flexsearch.cjk: char` restores one token per character. Tested by `tests/search-cjk.spec.ts` (the pair test fails on the previous code).
+
 ## v0.20.0
 
 - Language switch as a combo like the theme toggle, with configurable placement (#30).
