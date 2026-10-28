@@ -7,6 +7,7 @@
 (function () {
   const resultsFoundTemplate = '{{ (T "resultsFound") | default "%d results found" }}';
   const noResultsText = '{{ $noResultsFound }}';
+  const loadingText = '{{ (T "searchLoading") | default "Loading the search index…" }}';
 
   const EDITABLE_TAGS = ['INPUT', 'SELECT', 'BUTTON', 'TEXTAREA'];
   const isMac = /iPad|iPhone|Macintosh/.test(navigator.userAgent);
@@ -140,13 +141,17 @@
       return;
     }
     if (dialog.open) return;
+    const queryAtOpen = input.value;
     dialog.showModal();
     input.setAttribute('aria-expanded', 'true');
     // showModal autofocuses the first focusable element, but be explicit.
-    // Select existing query so typing immediately replaces it.
+    // Select the query left from last time so typing replaces it, but only if
+    // nothing was typed since the dialog opened: a fast typist's first
+    // characters are in the field by the next frame, and selecting them made
+    // the next keystroke replace them ("toolkit" became "oolkit").
     requestAnimationFrame(() => {
       input.focus();
-      input.select();
+      if (input.value === queryAtOpen) input.select();
     });
     if (window.hextraSearch) window.hextraSearch.preload().catch(() => {});
   }
@@ -332,6 +337,9 @@
       return;
     }
     if (!window.hextraSearch) return;
+    // The query is run as soon as the index is ready; until then say so, rather
+    // than showing nothing (or, worse, "no results").
+    if (!window.hextraSearch.ready && statusEl) statusEl.textContent = loadingText;
     let results;
     try {
       results = await window.hextraSearch.search(query);
