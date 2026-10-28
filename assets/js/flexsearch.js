@@ -15,6 +15,7 @@
   let pageIndex;
   let sectionIndex;
   let indexPromise = null;
+  let indexReady = false;
 
   /**
    * Preloads the search index by fetching data and adding it to the FlexSearch index.
@@ -165,6 +166,7 @@
           content: pageContent
         });
       }
+      indexReady = true;
     })();
     // Clear the cached promise on failure so the next call retries instead of
     // returning the rejection forever.
@@ -256,6 +258,8 @@
 
   window.hextraSearch = {
     preload: preloadIndex,
+    // True once the index is built; a query typed before is run when it is.
+    get ready() { return indexReady; },
     async search(query) {
       await preloadIndex();
       return performSearch(query);
