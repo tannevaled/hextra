@@ -9,6 +9,7 @@
     "test:mobile-menu": "npx playwright test tests/mobile-menu.spec.ts",
     "test:search-scope": "npx playwright test tests/search-scope.spec.ts",
     "test:search-cjk": "npx playwright test tests/search-cjk.spec.ts",
+    "test:version-banner": "npx playwright test tests/version-banner.spec.ts",
     "test:build": "npx playwright test tests/asciidoc.spec.ts tests/katex.spec.ts tests/language-flags.spec.ts tests/openapi.spec.ts tests/render-link.spec.ts tests/search-data.spec.ts tests/search-fragments.spec.ts tests/version-select.spec.ts"
   },
   "devDependencies": {

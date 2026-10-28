@@ -2,6 +2,10 @@
 
 Releases follow [semantic versioning](https://semver.org). Each states the upstream base it is built on.
 
+## v0.24.0 (unreleased)
+
+- **version banner component.** `components/version-banner.html` (called from `custom/content-begin.html`) replaces the per-site copies of the "outdated version" banner. Decided in the browser from `<docs root>/versions.json`: the version with the alias `latest` shows nothing, the development version shows a "development version" notice (the copies showed "outdated" there), any other version shows "outdated" with a link to the docs root; no `versions.json`, no banner. Tested by `tests/version-banner.spec.ts` (including a `latest` alias that moves after the page was built, with no rebuild; a mutated comparison fails both tests).
+
 ## v0.23.0
 
 - **CJK search by pairs of characters.** A run of Chinese, Japanese or Korean characters is indexed (and queried) as overlapping pairs instead of one token per character, so a query no longer matches every page that contains its characters in any order. Measured on the go-widgets documentation (ja, ko, zh-cn) in Chrome, before / after, result links: `アクセシビリティ` 110 / 61, the page about it ranked first instead of an unrelated one; its reversed characters 108 / 4; `성근접` (`접근성` reversed) 58 / 0; `碍障无` (`无障碍` reversed) 52 / 0; `툴킷이름없음` 106 / 47. Latin queries return the same results (`accessibility` 14, `toolkit` 58, `painter` 26). A single character still finds the pages it begins a pair in. `params.search.flexsearch.cjk: char` restores one token per character. Tested by `tests/search-cjk.spec.ts` (the pair test fails on the previous code).

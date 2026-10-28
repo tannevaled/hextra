@@ -1,0 +1,57 @@
+{{- /* Banner for documentation published one build per version (see
+  components/version-select.html). Call it from layouts/_partials/custom/content-begin.html:
+      {{ partial "components/version-banner.html" . }}
+
+  A build cannot know the versions published after it, so the banner is
+  rendered hidden and the browser decides, from <docs root>/versions.json
+  (mike's format: version, title, aliases, properties):
+    - the current version holds the alias "latest": no banner;
+    - the current version is the development one (properties.development, or
+      named params.versions.development): "development version" notice;
+    - otherwise, when another version holds "latest": "outdated version" notice,
+      linking to the docs root (which redirects to latest/).
+  Without a versions.json (a local build) there is no banner. The link is set
+  by the browser, so an offline link check, where only this version exists,
+  never sees it. */ -}}
+{{- $basePath := strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path -}}
+{{- $current := path.Base $basePath -}}
+{{- $docsRoot := printf "%s/" (strings.TrimSuffix "/" (path.Dir $basePath)) -}}
+{{- $dev := site.Params.versions.development | default "development" -}}
+<div class="hextra-version-banner" role="note" hidden
+     data-docs-root="{{ $docsRoot }}" data-current="{{ $current }}" data-dev="{{ $dev }}">
+  <span data-text="outdated">{{ T "versionOutdated" }}</span>
+  <span data-text="development" hidden>{{ T "versionDevelopment" }}</span>
+  <a>{{ T "versionBannerLink" }}</a>
+</div>
+<style>
+  .hextra-version-banner { margin-top: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem;
+    border: 1px solid #f59e0b; background: #fffbeb; color: #78350f; }
+  .hextra-version-banner[hidden] { display: none; }
+  .dark .hextra-version-banner { background: #451a03; color: #fde68a; border-color: #b45309; }
+  .hextra-version-banner a { text-decoration: underline; font-weight: 600; }
+</style>
+<script>
+  (function () {
+    var box = document.currentScript.previousElementSibling.previousElementSibling;
+    var d = box.dataset;
+    fetch(d.docsRoot + "versions.json", { cache: "no-cache" })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (versions) {
+        versions = Array.isArray(versions) ? versions : [];
+        var isDev = function (v) { return v.version === d.dev || !!(v.properties && v.properties.development); };
+        var self = versions.filter(function (v) { return v && v.version === d.current; })[0];
+        var latest = versions.filter(function (v) {
+          return v && Array.isArray(v.aliases) && v.aliases.indexOf("latest") >= 0;
+        })[0];
+        var kind = "";
+        if (d.current === d.dev || (self && isDev(self))) kind = "development";
+        else if (latest && latest.version !== d.current) kind = "outdated";
+        if (!kind) return;
+        box.querySelector('[data-text="outdated"]').hidden = kind !== "outdated";
+        box.querySelector('[data-text="development"]').hidden = kind !== "development";
+        box.querySelector("a").href = d.docsRoot;
+        box.hidden = false;
+      })
+      .catch(function () { /* no versions.json (local build): no banner */ });
+  })();
+</script>
