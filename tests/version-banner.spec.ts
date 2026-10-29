@@ -111,6 +111,29 @@ test("the version banner follows versions.json", async ({ page }) => {
   }
 });
 
+test("the only published build is the development one: its notice has no link to itself", async ({ page }) => {
+  const { siteDir, dirs } = buildSite();
+  try {
+    // What pagespublish writes when no release exists: main holds both "latest"
+    // and the development property.
+    const only = [{ version: "development", title: "development", aliases: ["latest"], properties: { development: true } }];
+    const b = await banner(page, dirs, "development", only);
+    await expect(b).toBeVisible();
+    await expect(b.locator('[data-text="development"]')).toBeVisible();
+    await expect(b.locator("a")).toBeHidden();
+
+    // With a release published, the development notice links to the docs root.
+    const withRelease = [{ version: "1.0", title: "1.0", aliases: ["latest"] }, only[0]].map((v) =>
+      v.version === "development" ? { ...v, aliases: [] } : v
+    );
+    const c = await banner(page, dirs, "development", withRelease);
+    await expect(c.locator("a")).toBeVisible();
+    await expect(c.locator("a")).toHaveAttribute("href", "/docs/");
+  } finally {
+    rmSync(siteDir, { recursive: true, force: true });
+  }
+});
+
 test("a version whose alias moved is outdated the next time the page is read", async ({ page }) => {
   const { siteDir, dirs } = buildSite();
   try {
