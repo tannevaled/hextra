@@ -7,7 +7,8 @@
   (mike's format: version, title, aliases, properties):
     - the current version holds the alias "latest": no banner;
     - the current version is the development one (properties.development, or
-      named params.versions.development): "development version" notice;
+      named params.versions.development): "development version" notice (with
+      no link when it also holds "latest", the only build published);
     - otherwise, when another version holds "latest": "outdated version" notice,
       linking to the docs root (which redirects to latest/).
   Without a versions.json (a local build) there is no banner. The link is set
@@ -49,7 +50,11 @@
         if (!kind) return;
         box.querySelector('[data-text="outdated"]').hidden = kind !== "outdated";
         box.querySelector('[data-text="development"]').hidden = kind !== "development";
-        box.querySelector("a").href = d.docsRoot;
+        // A development build that is also the only one published holds the
+        // alias "latest" itself: "go to the latest version" would lead back here.
+        var link = box.querySelector("a");
+        if (latest && latest.version === d.current) link.hidden = true;
+        else link.href = d.docsRoot;
         box.hidden = false;
       })
       .catch(function () { /* no versions.json (local build): no banner */ });

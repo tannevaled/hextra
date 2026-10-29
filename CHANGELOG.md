@@ -2,7 +2,11 @@
 
 Releases follow [semantic versioning](https://semver.org). Each states the upstream base it is built on.
 
-## v0.24.0 (unreleased)
+## v0.24.1 (unreleased)
+
+- **version banner: no link to itself.** When the only published build is the development one (it holds both the alias `latest` and `properties.development`, as `pagespublish` writes before any release), its notice no longer offers "Go to the latest version", which was the same page. Tested by a new case of `tests/version-banner.spec.ts` that fails on v0.24.0.
+
+## v0.24.0
 
 - **version banner component.** `components/version-banner.html` (called from `custom/content-begin.html`) replaces the per-site copies of the "outdated version" banner. Decided in the browser from `<docs root>/versions.json`: the version with the alias `latest` shows nothing, the development version shows a "development version" notice (the copies showed "outdated" there), any other version shows "outdated" with a link to the docs root; no `versions.json`, no banner. Tested by `tests/version-banner.spec.ts` (including a `latest` alias that moves after the page was built, with no rebuild; a mutated comparison fails both tests).
 
